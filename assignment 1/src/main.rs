@@ -21,6 +21,10 @@ fn main() {
             // tokenize each line
             let tokenizer = tokenizer::Tokenizer::new(line.to_string());
             let tokens = tokenizer.tokenize();
+            dbg!(&tokens);
+            if let Ok(tokens) = tokens {
+                let expression = parser::parse(tokens).unwrap();
+            }
         });
     }
     // continuously read input from terminal

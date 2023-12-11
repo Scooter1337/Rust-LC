@@ -40,6 +40,7 @@ impl Tokenizer {
     }
 
     pub(super) fn tokenize(&self) -> Result<Vec<Token>> {
+        dbg!(self.input.len());
         let mut tokens = Vec::with_capacity(self.input.len());
         let mut chars = self.input.chars().peekable();
 
@@ -47,7 +48,9 @@ impl Tokenizer {
             match c {
                 '\\' | 'λ' => {
                     let mut varname = String::new();
-                    while let Some(&c) = chars.peek() {
+                    while let Some(c) = chars.next() {
+                        dbg!(c);
+                        dbg!(&varname);
                         match c {
                             '.' | '(' => {
                                 if varname.is_empty() {
@@ -65,7 +68,7 @@ impl Tokenizer {
                                 }
                             }
                             c if c.is_alphabetic() => {
-                                varname.push(chars.next().unwrap());
+                                varname.push(c);
                             }
                             _ => return Err(LexError::InvalidCharacter(c)),
                         }
@@ -89,6 +92,7 @@ impl Tokenizer {
                 c if c.is_whitespace() => (),
                 _ => return Err(LexError::InvalidCharacter(c)),
             }
+            dbg!(&tokens);
         }
         dbg!(&tokens);
         Ok(tokens)
