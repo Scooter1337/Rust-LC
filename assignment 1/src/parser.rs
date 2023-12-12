@@ -2,16 +2,12 @@ use crate::tokenizer::Token;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Expression {
-    /// '\' <Variable> <Expression>
-    Lambda(String, Box<Expression>),
     /// <Expression> <Expression>
     Application(Box<Expression>, Box<Expression>),
     /// <Variable>
     Variable(String),
-    /// '(' <Expression> ')'
-    Paren(Box<Expression>),
-    /// Vec<Expression>
-    Body(Vec<Expression>),
+    /// \ <Variable> . <Expression>
+    Abstraction(String, Box<Expression>),
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -22,48 +18,76 @@ pub(super) enum ParseError {
 
 pub(super) type Result<T> = std::result::Result<T, ParseError>;
 
-fn _parse(tokens: &Vec<Token>, i: &mut usize) -> Result<Expression> {
-    if tokens.is_empty() {
-        return Err(ParseError::EmptyExpression);
-    }
+fn _parse(tokens: &[Token]) -> Result<Expression> {
+    let mut idx = 0;
+    let mut result = Vec::new();
 
-    let mut expression: Vec<Expression> = Vec::new();
-
-    while let Some(token) = tokens.get(*i) {
-        match token {
+    while idx < tokens.len() {
+        dbg!(&tokens[idx]);
+        match &tokens[idx] {
             Token::Lambda(name) => {
-                *i += 1;
-                expression.push(Expression::Lambda(
-                    name.to_owned(),
-                    _parse(tokens, i)?.into(),
-                ))
+                if idx + 1 >= tokens.len() {
+                    return Err(ParseError::InvalidExpression);
+                }
+
+                let body = _parse(&tokens[idx + 1..])?;
+                result.push(Expression::Abstraction(name.clone(), Box::new(body)));
+                idx = tokens.len();
             }
-            Token::Variable(name) => {
-                expression.push(Expression::Variable(name.to_owned()));
+            Token::Variable(ref variable) => {
+                result.push(Expression::Variable(variable.clone()));
             }
             Token::LParen => {
-                *i += 1;
-                expression.push(Expression::Paren(_parse(tokens, i)?.into()));
+                let mut paren_count = 1;
+                let mut end_idx = idx + 1;
+                while end_idx < tokens.len() {
+                    match tokens[end_idx] {
+                        Token::LParen => paren_count += 1,
+                        Token::RParen => {
+                            if paren_count == 1 {
+                                result.push(_parse(&tokens[idx + 1..end_idx])?);
+                            }
+                            paren_count -= 1
+                        }
+                        _ => {}
+                    }
+                    if paren_count == 0 {
+                        break;
+                    }
+                    end_idx += 1;
+                }
+                if paren_count != 0 {
+                    return Err(ParseError::InvalidExpression);
+                }
+
+                idx = end_idx + 1;
             }
             Token::RParen => {
-                if expression.is_empty() {
-                    return Err(ParseError::EmptyExpression);
-                }
-                return Ok(Expression::Body(expression));
+                return Err(ParseError::InvalidExpression);
             }
         }
-        *i += 1;
+        idx += 1;
     }
-    if expression.is_empty() {
+
+    if result.is_empty() {
         return Err(ParseError::EmptyExpression);
     }
-    Ok(Expression::Body(expression))
+
+    if result.len() == 1 {
+        Ok(result.pop().unwrap())
+    } else {
+        match result
+            .into_iter()
+            .reduce(|acc, expr| Expression::Application(Box::new(acc), Box::new(expr)))
+        {
+            Some(expr) => Ok(expr),
+            None => Err(ParseError::InvalidExpression),
+        }
+    }
 }
 
-pub(super) fn parse(tokens: Vec<Token>) -> Result<Expression> {
-    let parsed = _parse(&tokens, &mut 0);
-    dbg!(&parsed);
-    parsed
+pub(super) fn parse(tokens: &[Token]) -> Result<Expression> {
+    Ok(_parse(tokens))?
 }
 
 /*

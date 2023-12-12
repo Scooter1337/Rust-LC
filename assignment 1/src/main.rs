@@ -23,7 +23,8 @@ fn main() {
             let tokens = tokenizer.tokenize();
             dbg!(&tokens);
             if let Ok(tokens) = tokens {
-                let expression = parser::parse(tokens).unwrap();
+                let expression = parser::parse(&tokens).unwrap();
+                dbg!(&expression);
             }
         });
     }

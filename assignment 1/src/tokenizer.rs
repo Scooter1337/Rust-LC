@@ -15,6 +15,7 @@ pub(super) enum LexError {
     EmptyVariableName,
     InvalidCharacter(char),
     InvalidExpression,
+    InvalidVariableName,
 }
 
 impl std::fmt::Display for LexError {
@@ -22,6 +23,7 @@ impl std::fmt::Display for LexError {
         dbg!(self);
         match self {
             LexError::EmptyVariableName => write!(f, "Empty variable name"),
+            LexError::InvalidVariableName => write!(f, "Invalid variable name"),
             LexError::InvalidCharacter(c) => write!(f, "Invalid character: {}", c),
             LexError::InvalidExpression => write!(f, "Invalid expression"),
         }
@@ -68,6 +70,12 @@ impl Tokenizer {
                                 }
                             }
                             c if c.is_alphabetic() => {
+                                varname.push(c);
+                            }
+                            c if c.is_numeric() => {
+                                if varname.is_empty() {
+                                    return Err(LexError::InvalidVariableName);
+                                }
                                 varname.push(c);
                             }
                             _ => return Err(LexError::InvalidCharacter(c)),
