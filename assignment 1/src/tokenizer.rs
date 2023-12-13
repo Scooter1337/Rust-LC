@@ -88,7 +88,7 @@ impl Tokenizer {
                 c if c.is_alphabetic() => {
                     let mut varname = String::from(c);
                     while let Some(&c) = chars.peek() {
-                        if c.is_alphabetic() {
+                        if c.is_alphanumeric() {
                             varname.push(chars.next().unwrap());
                         } else {
                             break;

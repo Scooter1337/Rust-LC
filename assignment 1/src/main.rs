@@ -3,9 +3,11 @@
 
 #[allow(dead_code)]
 mod line_reader;
+use line_reader::*;
 
 #[allow(dead_code)]
 mod tokenizer;
+use tokenizer::*;
 
 #[allow(dead_code)]
 mod parser;
@@ -15,10 +17,10 @@ mod utils;
 
 #[allow(dead_code, unused)]
 fn main() {
-    // if no args provided
+    // if args provided, read from file
     if std::env::args().len() > 1 {
         // read lines from file
-        let lines = line_reader::read_lines_from_file();
+        let lines = read_lines_from_file();
 
         if lines.is_empty() {
             panic!("Empty file!");
@@ -26,13 +28,15 @@ fn main() {
 
         lines.into_iter().for_each(|line| {
             // tokenize each line
-            let tokenizer = tokenizer::Tokenizer::new(line);
+            let tokenizer = Tokenizer::new(line);
             let tokens = tokenizer.tokenize();
             dbg!(&tokens);
             if let Ok(tokens) = tokens {
                 let expression = parser::parse(&tokens).unwrap();
                 dbg!(&expression);
                 println!("{}", expression);
+            } else {
+                println!("Invalid expression!");
             }
         });
     }
@@ -40,10 +44,24 @@ fn main() {
     else {
         println!("Welcome to the lambda calculus interpreter!");
         println!("Enter a lambda expression to evaluate:");
-        loop {
-            if let Ok(line) = line_reader::read_line_from_terminal() {
-                dbg!(line);
+        // loop {
+        if let Ok(line) = read_line_from_terminal() {
+            if line.is_empty() {
+                // continue;
             }
+            dbg!(&line);
+            // tokenize line
+            let tokenizer = Tokenizer::new(line);
+            let tokens = tokenizer.tokenize();
+            dbg!(&tokens);
+            if let Ok(tokens) = tokens {
+                let expression = parser::parse(&tokens).unwrap();
+                dbg!(&expression);
+                println!("{}", expression);
+            }
+        } else {
+            println!("Invalid expression!");
         }
+        // }
     }
 }
