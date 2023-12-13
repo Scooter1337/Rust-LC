@@ -12,13 +12,18 @@ S3704041
 ## Building & Running
 
 - `cd assignment*` \
-- `cargo run --release` \
-  (is equal to cargo build --release && .target/release/main) \
-  (the release flag is important for performance, but not for correctness, removing it adds some debug info)
-
+To comply with the assignment requirements:
+- `make build` \
+  (is equal to cargo build --release) \
+  (the release flag is important for performance, but not for correctness, removing the flag unleashes some debug macros.)
+- `make run` \
+  (this performs `cargo run --release`, which is normally used to build & run, but let's make it seem like we're using a legacy language.)
+  
 ## Cleaning
 
-Just like most Makefiles implement, cargo has a clean command: `cargo clean`
+Just like most Makefiles implement, cargo has a clean command you might want to use: `cargo clean` \
+Target folders can get really large, my highest recorded size is 12GB.
+For simplicity, I added it to the Makefile, so you can use `make clean` too.
 
 ## Some more interesting tools I used
 
