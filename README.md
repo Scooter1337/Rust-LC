@@ -18,6 +18,8 @@ To comply with the assignment requirements:
   (the release flag is important for performance, but not for correctness, removing the flag unleashes some debug macros.)
 - `make run` \
   (this performs `cargo run --release`, which is normally used to build & run, but let's make it seem like we're using a legacy language.)
+
+- By running with a filename, you can parse all rows in the file one by one
   
 ## Cleaning
 
