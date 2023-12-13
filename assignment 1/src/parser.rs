@@ -25,7 +25,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
     let mut result = Vec::new();
 
     while idx < tokens.len() {
-        dbg!(&tokens[idx]);
         match &tokens[idx] {
             Token::Lambda(name) => {
                 if idx + 1 >= tokens.len() {
@@ -78,10 +77,9 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
     if result.len() == 1 {
         Ok(result.pop().unwrap())
     } else {
-        match result
-            .into_iter()
-            .reduce(|acc, expr| Expression::Application(Box::new(acc), Box::new(expr)))
-        {
+        match result.into_iter().reduce(|left_expr, right_expr| {
+            Expression::Application(Box::new(left_expr), Box::new(right_expr))
+        }) {
             Some(expr) => Ok(expr),
             None => Err(ParseError::InvalidExpression),
         }
@@ -109,7 +107,7 @@ impl Display for Expression {
 
             λx.a b
             */
-            Expression::Abstraction(name, expr) => write!(fmt, "λ{}.{}", name, expr),
+            Expression::Abstraction(name, expr) => write!(fmt, "λ{name}.{expr}"),
             /*
             If Variable -> print {name}
             Variable("a")
@@ -118,7 +116,7 @@ impl Display for Expression {
 
             a
              */
-            Expression::Variable(name) => write!(fmt, "{}", name),
+            Expression::Variable(name) => write!(fmt, "{name}"),
             /*
             If Application
                 If lexpr = abs -> "({left_expr})"
@@ -128,19 +126,21 @@ impl Display for Expression {
                   Else -> "{right_expr}"
              */
             Expression::Application(left_expr, right_expr) => {
+                // Left
                 if let Expression::Abstraction(_l, _r) = left_expr.as_ref() {
-                    write!(fmt, "({})", left_expr)?;
+                    write!(fmt, "({left_expr})")
                 } else {
-                    write!(fmt, "{}", left_expr)?;
-                };
+                    write!(fmt, "{left_expr}")
+                }?;
                 // Seperator
                 write!(fmt, " ")?;
+                // Right
                 match right_expr.as_ref() {
                     Expression::Application(_, _) | Expression::Abstraction(_, _) => {
-                        write!(fmt, "({})", right_expr)
+                        write!(fmt, "({right_expr})")
                     }
 
-                    _ => write!(fmt, "{}", right_expr),
+                    r_expr => write!(fmt, "{r_expr}"),
                 }
             }
         }
