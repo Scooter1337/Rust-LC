@@ -24,9 +24,9 @@ fn main() {
             panic!("Empty file!");
         }
 
-        lines.iter().for_each(|line| {
+        lines.into_iter().for_each(|line| {
             // tokenize each line
-            let tokenizer = tokenizer::Tokenizer::new(line.to_string());
+            let tokenizer = tokenizer::Tokenizer::new(line);
             let tokens = tokenizer.tokenize();
             dbg!(&tokens);
             if let Ok(tokens) = tokens {
