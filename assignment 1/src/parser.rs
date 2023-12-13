@@ -1,3 +1,5 @@
+use std::fmt::{Display, Error, Formatter};
+
 use crate::tokenizer::Token;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -16,9 +18,9 @@ pub(super) enum ParseError {
     InvalidExpression,
 }
 
-pub(super) type Result<T> = std::result::Result<T, ParseError>;
+pub(super) type ParseResult<T> = std::result::Result<T, ParseError>;
 
-fn _parse(tokens: &[Token]) -> Result<Expression> {
+fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
     let mut idx = 0;
     let mut result = Vec::new();
 
@@ -86,39 +88,61 @@ fn _parse(tokens: &[Token]) -> Result<Expression> {
     }
 }
 
-pub(super) fn parse(tokens: &[Token]) -> Result<Expression> {
+pub(super) fn parse(tokens: &[Token]) -> ParseResult<Expression> {
     Ok(_parse(tokens))?
 }
 
-/*
-Token::Lambda => {
-            expression.push(Expression::Lambda(token, Box::new(body)));
-        }
-        Token::Variable(variable) => {
-            expression.push(Expression::Variable(variable));
-        }
-        Token::OpenParen => {
-            expression.push(Expression::Paren(Box::new(Expression::Variable(
-                "(".to_string(),
-            ))));
-        }
-        Token::CloseParen => {
-            let mut body = Vec::new();
-            while let Some(expr) = expression.pop() {
-                match expr {
-                    Expression::Variable(variable) if variable == "(" => {
-                        break;
+impl Display for Expression {
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), Error> {
+        match self {
+            /*
+            If Lambda -> print λ{name}.{expr}
+            Lambda(
+                "x",
+                Application ([
+                Variable("a"),
+                Variable("b")
+            ])
+            )
+
+            Becomes
+
+            λx.a b
+            */
+            Expression::Abstraction(name, expr) => write!(fmt, "λ{}.{}", name, expr),
+            /*
+            If Variable -> print {name}
+            Variable("a")
+
+            Becomes
+
+            a
+             */
+            Expression::Variable(name) => write!(fmt, "{}", name),
+            /*
+            If Application
+                If lexpr = abs -> "({left_expr})"
+                Else -> "{left_expr}"
+                + " "
+                + If rexpr = app | abs -> "({right_expr})"
+                  Else -> "{right_expr}"
+             */
+            Expression::Application(left_expr, right_expr) => {
+                if let Expression::Abstraction(_l, _r) = left_expr.as_ref() {
+                    write!(fmt, "({})", left_expr)?;
+                } else {
+                    write!(fmt, "{}", left_expr)?;
+                };
+                // Seperator
+                write!(fmt, " ")?;
+                match right_expr.as_ref() {
+                    Expression::Application(_, _) | Expression::Abstraction(_, _) => {
+                        write!(fmt, "({})", right_expr)
                     }
-                    _ => {
-                        body.push(expr);
-                    }
+
+                    _ => write!(fmt, "{}", right_expr),
                 }
             }
-            body.reverse();
-            expression.push(Expression::Paren(Box::new(Expression::Application(
-                Box::new(body[0].clone()),
-                Box::new(body[1].clone()),
-            ))));
         }
-
-*/
+    }
+}

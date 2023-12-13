@@ -25,6 +25,7 @@ fn main() {
             if let Ok(tokens) = tokens {
                 let expression = parser::parse(&tokens).unwrap();
                 dbg!(&expression);
+                println!("{}", expression);
             }
         });
     }
