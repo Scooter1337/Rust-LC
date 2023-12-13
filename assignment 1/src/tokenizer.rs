@@ -1,3 +1,6 @@
+// Import handy dbg! macro (shadowing std::dbg! macro)
+use crate::dbg;
+
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Token {
     /// an abstraction with a bound variable
@@ -42,7 +45,6 @@ impl Tokenizer {
     }
 
     pub(super) fn tokenize(&self) -> Result<Vec<Token>> {
-        dbg!(self.input.len());
         let mut tokens = Vec::with_capacity(self.input.len());
         let mut chars = self.input.chars().peekable();
 
@@ -50,9 +52,7 @@ impl Tokenizer {
             match c {
                 '\\' | 'λ' => {
                     let mut varname = String::new();
-                    while let Some(c) = chars.next() {
-                        dbg!(c);
-                        dbg!(&varname);
+                    for c in chars.by_ref() {
                         match c {
                             '.' | '(' => {
                                 if varname.is_empty() {
@@ -86,8 +86,7 @@ impl Tokenizer {
                 '(' => tokens.push(Token::LParen),
                 ')' => tokens.push(Token::RParen),
                 c if c.is_alphabetic() => {
-                    let mut varname = String::new();
-                    varname.push(c);
+                    let mut varname = String::from(c);
                     while let Some(&c) = chars.peek() {
                         if c.is_alphabetic() {
                             varname.push(chars.next().unwrap());
@@ -100,9 +99,7 @@ impl Tokenizer {
                 c if c.is_whitespace() => (),
                 _ => return Err(LexError::InvalidCharacter(c)),
             }
-            dbg!(&tokens);
         }
-        dbg!(&tokens);
         Ok(tokens)
     }
 }

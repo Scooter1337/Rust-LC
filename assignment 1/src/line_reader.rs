@@ -1,3 +1,6 @@
+// Import handy dbg! macro (shadowing std::dbg! macro)
+use crate::dbg;
+
 use std::{
     env::args,
     fs::File,

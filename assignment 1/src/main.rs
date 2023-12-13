@@ -1,10 +1,17 @@
+// L.A. (Luca) Verheul - S3704041
+// Wo 13 Dec 2023
+
 #[allow(dead_code)]
 mod line_reader;
+
 #[allow(dead_code)]
 mod tokenizer;
 
 #[allow(dead_code)]
 mod parser;
+
+#[allow(dead_code)]
+mod utils;
 
 #[allow(dead_code, unused)]
 fn main() {
