@@ -106,5 +106,17 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
     <td class="tg-0lax">397ms</td>
     <td class="tg-0pky">606ms</td>
   </tr>
+  <tr>
+    <td class="tg-fymr">λx.λy.λz.(a λw.b)</td>
+    <td class="tg-0lax">363ns</td>
+    <td class="tg-0lax">846ns</td>
+    <td class="tg-0lax">1.26µs</td>
+    <td class="tg-0lax">363µs</td>
+    <td class="tg-0pky">846µs</td>
+    <td class="tg-0pky">1.26ms</td>
+    <td class="tg-0pky">349ms</td>
+    <td class="tg-0lax">896ms</td>
+    <td class="tg-0pky">1.20s</td>
+  </tr>
 </tbody>
 </table>
