@@ -33,7 +33,7 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
 
 ### Assignment 1
 
-> You can repeat these tests by running `make run -b 'a b c' 1000`, `make run -b 'a b c' 1000000`, etc.
+> You can repeat these tests by running `make run-bench EXPR="a b c" N=1000`, `make run-bench EXPR="a b c" N=1000000`, etc.
 
 
 <table class="tg">
