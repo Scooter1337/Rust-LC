@@ -23,7 +23,7 @@
 - Followed by alphanumeric characters ✅
 - Seperated by spaces ✅
 - Parentheses are supported ✅
-- reparsing output yields the same result (reparse) ❌
+- reparsing output yields the same result (reparse) ✅
 
 ### Examples
 
@@ -41,15 +41,15 @@
 ### Grammar
 
 - whitespace insensitive ✅
-- should result in same output on second run ❌
+- should result in same output on second run ✅
 - unambiguous output ✅
 - multiple expressions on new lines ✅
 
 ## May
 
-- Explain format in README ❌
-- program explanation in README ❌
-- positive and negative examples ❌
+- Explain format in README ✅
+- program explanation in README ✅
+- positive and negative examples ✅/❌
 - may accept multiple expressions, one per line ✅
 - error message may be printed on error ✅
 - Program may support unicode ✅
