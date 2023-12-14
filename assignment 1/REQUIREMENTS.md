@@ -6,9 +6,9 @@
 - lex expression ✅
 - parse tokens ✅
 - output string ✅
-- detect syntax errors
+- detect syntax errors ✅
 - no external dependencies ✅
-- include README.md
+- include README.md ✅
 - compilable with `make` ✅
 - cli interface ✅
 - exit with '0' when all expressions are valid ✅
@@ -23,12 +23,12 @@
 - Followed by alphanumeric characters ✅
 - Seperated by spaces ✅
 - Parentheses are supported ✅
-- reparsing output yields the same result (reparse)
+- reparsing output yields the same result (reparse) ❌
 
 ### Examples
 
-- each expression seperately
-- each expression in one go
+- each expression seperately ✅
+- each expression in one go ✅
 
 ## Should
 
@@ -41,15 +41,15 @@
 ### Grammar
 
 - whitespace insensitive ✅
-- should result in same output on second run
+- should result in same output on second run ❌
 - unambiguous output ✅
 - multiple expressions on new lines ✅
 
 ## May
 
-- Explain format in README
-- program explanation in README
-- positive and negative examples
+- Explain format in README ❌
+- program explanation in README ❌
+- positive and negative examples ❌
 - may accept multiple expressions, one per line ✅
 - error message may be printed on error ✅
 - Program may support unicode ✅

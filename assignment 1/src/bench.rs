@@ -2,8 +2,12 @@ use crate::parser;
 use crate::tokenizer::*;
 
 pub fn bench(args: Vec<String>) {
-    let phrase = args[2].clone();
-    let times = args[3].parse::<usize>().unwrap();
+    let phrase = args.get(2).expect("No expression given!").clone();
+    let times = args
+        .get(3)
+        .expect("No iterations given!")
+        .parse::<usize>()
+        .unwrap();
     let tokenizer = Tokenizer::new(phrase.clone());
 
     // warmup
