@@ -53,13 +53,13 @@ fn main() {
         .enumerate()
         .map(|(idx, line)| {
             let tokens = tokenize(&line, idx);
-            let expression = parse(&tokens, Some(idx));
+            let expression = parse(&tokens, idx);
             // convert the expression to a string, making use of the Display trait
             let exprstring = expression.to_string();
 
             // reparse the expression
             let tokens2 = tokenize(&exprstring, idx);
-            let expression2 = parse(&tokens2, Some(idx));
+            let expression2 = parse(&tokens2, idx);
 
             // check if the expressions are equal
             match expression == expression2 {

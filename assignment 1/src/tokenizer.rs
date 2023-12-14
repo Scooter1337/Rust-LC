@@ -3,6 +3,7 @@
 
 // Import handy dbg! macro (shadowing std::dbg! macro)
 use crate::dbg;
+use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Token {
@@ -27,8 +28,8 @@ pub(super) enum LexError {
     EmptyLambdaVariable(usize),
 }
 
-impl std::fmt::Display for LexError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl Display for LexError {
+    fn fmt(&self, f: &mut Formatter) -> Result {
         match self {
             LexError::EmptyVariableName(i) => write!(f, "Empty variable name at pos: {}", i),
             LexError::EmptyLambdaVariable(i) => write!(f, "Empty lambda variable at pos: {}", i),
@@ -44,24 +45,27 @@ impl std::fmt::Display for LexError {
     }
 }
 
-type Result<T> = std::result::Result<T, LexError>;
+type LexResult<T> = std::result::Result<T, LexError>;
 
-fn _tokenize(input: &str) -> Result<Vec<Token>> {
+fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
     let mut tokens = Vec::with_capacity(input.len());
     let mut chars = input.chars().enumerate().peekable();
 
     while let Some((idx, c)) = chars.next() {
         match c {
             '\\' | 'λ' => {
+                // retrieve lambda variable
                 let mut varname = String::new();
                 while let Some((idx, c)) = chars.peek() {
                     match c {
+                        // a dot and a left parenthesis always signify the end of the variable name
                         '.' | '(' => {
                             if varname.is_empty() {
                                 return Err(LexError::EmptyVariableName(*idx + 1));
                             }
                             break;
                         }
+                        // a space signifies the end of the variable name if it is not empty
                         c if c.is_whitespace() => {
                             if !varname.is_empty() {
                                 // name is not empty, we can break
@@ -72,15 +76,18 @@ fn _tokenize(input: &str) -> Result<Vec<Token>> {
                                 continue;
                             }
                         }
+                        // The first character of the variable name must be alphabetic and ascii
                         c if c.is_ascii_alphabetic() => {
                             varname.push(chars.next().unwrap().1);
                         }
+                        // The following characters of the variable name must be alphanumeric, but can be unicode
                         c if c.is_alphanumeric() => {
                             if varname.is_empty() {
                                 return Err(LexError::InvalidVariableName(*idx + 1));
                             }
                             varname.push(chars.next().unwrap().1);
                         }
+                        // All other characters are invalid
                         _ => {
                             let next = chars.next().unwrap();
                             return Err(LexError::InvalidLambdaVariableChar(next.1, next.0 + 1));
@@ -92,8 +99,11 @@ fn _tokenize(input: &str) -> Result<Vec<Token>> {
                 }
                 tokens.push(Token::Lambda(varname));
             }
+
             '(' => tokens.push(Token::LParen),
             ')' => tokens.push(Token::RParen),
+
+            // a variable name must start with an alphabetic ascii character
             c if c.is_ascii_alphabetic() => {
                 let mut varname = String::from(c);
                 while let Some((_, c)) = chars.peek() {
@@ -105,13 +115,29 @@ fn _tokenize(input: &str) -> Result<Vec<Token>> {
                 }
                 tokens.push(Token::Variable(varname));
             }
+
+            // ignore whitespace and dots
             c if c.is_whitespace() || c == '.' => (),
+
+            // all other characters are invalid
             _ => return Err(LexError::InvalidCharacter(c, idx + 1)),
         }
     }
     Ok(tokens)
 }
 
+/// Parse the given string into a vector of tokens
+/// If the given string is not a valid expression, prints an error and exits
+///
+/// # Arguments
+/// * `input` - The string to parse
+/// * `idx` - The index of the line in the input file (for error reporting)
+///
+/// # Returns
+/// A vector of tokens (Vec<Token>)
+///
+/// # Error
+/// "Invalid expression [{err_code}] caught during tokenizing on line {idx}!"
 pub(crate) fn tokenize(input: &str, idx: usize) -> Vec<Token> {
     let tokens = _tokenize(input);
     dbg!(&tokens);
@@ -130,10 +156,17 @@ pub(crate) fn tokenize(input: &str, idx: usize) -> Vec<Token> {
     }
 }
 
+/// Parse the given string into a vector of tokens
+/// Only used for benchmarking
+/// Unwraps the result, so panics if there is an error, for ultimate speed
 pub(crate) fn bench_tokenize(input: &str) -> Vec<Token> {
     _tokenize(input).unwrap()
 }
 
+/// Parse the given string into a vector of tokens. \
+/// If the given string is not a valid expression, returns None. \
+/// Only used for manual mode, where we want to keep parsing even if there is an error
+/// (does not exit with code 1 on error)
 pub(crate) fn manual_tokenize(input: &str) -> Option<Vec<Token>> {
     let tokens = _tokenize(input);
     dbg!(&tokens);

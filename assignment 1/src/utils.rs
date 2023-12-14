@@ -6,11 +6,11 @@
 /// The macro is evaluated at compile time, so there is 0.0 runtime cost.
 #[macro_export]
 macro_rules! dbg {
-    ($($e:expr),+) => {
+    ($($expr:expr),+) => {
         {
             #[cfg(debug_assertions)]
             {
-                std::dbg!($($e),+)
+                std::dbg!($($expr),+)
             }
         }
     };
