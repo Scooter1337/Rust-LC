@@ -34,5 +34,6 @@ For simplicity, I added it to the Makefile, so you can use `make clean` too.
 
 ## Benchmarking
 
-I wouldn't be a true Rustacean if I didn't include some benchmarks.
-So if I have time I will add some benchmarks.
+### Assignment 1
+> You can repeat these tests by running `make run -b 'a b c' 1`, `make run -b 'a b c' 1000`, `make run -b 'a b c' 1000000` \
+> 
