@@ -1,7 +1,10 @@
-a12 b c
+a12 b c我
 a (b c)
 abc
 \ x a b
-(\x ab)
+(\a我 ab)
 a \x b
-12
+(a b)
+a b c
+(\ x a b)
+(\x((a) (b)))

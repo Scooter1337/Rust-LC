@@ -2,40 +2,71 @@
 use crate::dbg;
 
 use std::{
-    env::args,
     fs::File,
-    io::{stdin, BufRead, BufReader, Error},
+    io::{stdin, BufRead, BufReader},
 };
 
-pub(super) fn read_lines_from_file() -> Vec<String> {
+/// Read lines from file
+/// Standard mode: read until EOF
+pub(super) fn read_lines_from_file(filename: &str) -> Vec<String> {
     // get os args input
-    let args: Vec<String> = args().collect();
-
-    // get filename from args
-    let filename = &args[1];
 
     let mut lines = Vec::new();
-    let file = File::open(filename).expect("Could not open file");
+    let file = match File::open(filename) {
+        Ok(file) => file,
+        Err(error) => {
+            eprintln!("Error opening file: {}", error);
+            std::process::exit(1);
+        }
+    };
+
     let reader = BufReader::new(file);
     for line in reader.lines() {
         lines.push(line.expect("Could not read line"));
     }
+
     dbg!(&lines);
     lines
 }
 
-pub(super) fn read_line_from_terminal() -> Result<String, Error> {
+/// Read lines from terminal
+/// Standard mode: read until EOF
+pub(super) fn read_lines_from_terminal() -> Vec<String> {
+    // vec for storing lines
+    let mut lines = Vec::new();
+
+    // lock stdin and get lines
+    let input = stdin().lock().lines();
+    for line in input {
+        match line {
+            Ok(line) => {
+                lines.push(line);
+            }
+            Err(error) => {
+                eprintln!("Error reading line: {}", error);
+                std::process::exit(1);
+            }
+        }
+    }
+    lines
+}
+
+/// Read line from terminal
+/// REPL mode: read until newline
+pub(super) fn read_line_from_terminal() -> String {
     let mut input = String::new();
     match stdin().lock().read_line(&mut input) {
         Ok(_) => {
-            // process the input here
-            let trimmed_input = input.trim();
-            dbg!(trimmed_input);
-            Ok(trimmed_input.to_string())
+            let input = input.trim().to_string();
+            dbg!(&input);
+            if input == "quit" || input == "exit" {
+                std::process::exit(0);
+            }
+            input
         }
         Err(error) => {
-            println!("Error reading input: {}", error);
-            Err(error)
+            eprintln!("Error reading line: {}", error);
+            std::process::exit(1);
         }
     }
 }
