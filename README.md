@@ -59,6 +59,18 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
     <td class="tg-ly6r">Comb.</td>
   </tr>
   <tr>
+    <td class="tg-fymr">a</td>
+    <td class="tg-0lax">63ns</td>
+    <td class="tg-0lax">70ns</td>
+    <td class="tg-0lax">154ns</td>
+    <td class="tg-0lax">63µs</td>
+    <td class="tg-0pky">70µs</td>
+    <td class="tg-0pky">154µs</td>
+    <td class="tg-0pky">59ms</td>
+    <td class="tg-0lax">73ms</td>
+    <td class="tg-0pky">148ms</td>
+  </tr>
+  <tr>
     <td class="tg-fymr">a b c</td>
     <td class="tg-0lax">170ns</td>
     <td class="tg-0lax">410ns</td>
