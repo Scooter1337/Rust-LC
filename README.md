@@ -83,7 +83,7 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
     <td class="tg-0pky">574ms</td>
   </tr>
   <tr>
-    <td class="tg-fymr">(\x((a) (b)))</td>
+    <td class="tg-fymr">(λx((a) (b)))</td>
     <td class="tg-0lax">184ns</td>
     <td class="tg-0lax">545ns</td>
     <td class="tg-0lax">755ns</td>
@@ -95,7 +95,7 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
     <td class="tg-0pky">731ms</td>
   </tr>
   <tr>
-    <td class="tg-fymr">(\ x a b)</td>
+    <td class="tg-fymr">(λ x a b)</td>
     <td class="tg-0lax">171ns</td>
     <td class="tg-0lax">387ns</td>
     <td class="tg-0lax">598ns</td>
