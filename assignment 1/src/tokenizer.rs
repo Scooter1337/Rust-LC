@@ -23,19 +23,23 @@ pub(super) enum LexError {
     InvalidCharacter(char, usize),
     InvalidExpression(usize),
     InvalidVariableName(usize),
+    InvalidLambdaVariableChar(char, usize),
     EmptyLambdaVariable(usize),
 }
 
 impl std::fmt::Display for LexError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            LexError::EmptyVariableName(i) => write!(f, "Empty variable name at idx: {}", i),
-            LexError::EmptyLambdaVariable(i) => write!(f, "Empty lambda variable at idx: {}", i),
-            LexError::InvalidVariableName(i) => write!(f, "Invalid variable name at idx: {}", i),
+            LexError::EmptyVariableName(i) => write!(f, "Empty variable name at pos: {}", i),
+            LexError::EmptyLambdaVariable(i) => write!(f, "Empty lambda variable at pos: {}", i),
+            LexError::InvalidVariableName(i) => write!(f, "Invalid variable name at pos: {}", i),
             LexError::InvalidCharacter(c, i) => {
-                write!(f, "Invalid character: '{}' at idx: {}", c, i)
+                write!(f, "Invalid character: '{}' at pos: {}", c, i)
             }
-            LexError::InvalidExpression(i) => write!(f, "Invalid expression at idx: {}", i),
+            LexError::InvalidExpression(i) => write!(f, "Invalid expression at pos: {}", i),
+            LexError::InvalidLambdaVariableChar(c, i) => {
+                write!(f, "Invalid lambda body character: '{}' at pos: {}", c, i)
+            }
         }
     }
 }
@@ -54,7 +58,7 @@ fn _tokenize(input: &str) -> Result<Vec<Token>> {
                     match c {
                         '.' | '(' => {
                             if varname.is_empty() {
-                                return Err(LexError::EmptyVariableName(*idx));
+                                return Err(LexError::EmptyVariableName(*idx + 1));
                             }
                             break;
                         }
@@ -73,18 +77,18 @@ fn _tokenize(input: &str) -> Result<Vec<Token>> {
                         }
                         c if c.is_alphanumeric() => {
                             if varname.is_empty() {
-                                return Err(LexError::InvalidVariableName(*idx));
+                                return Err(LexError::InvalidVariableName(*idx + 1));
                             }
                             varname.push(chars.next().unwrap().1);
                         }
                         _ => {
                             let next = chars.next().unwrap();
-                            return Err(LexError::InvalidCharacter(next.1, next.0));
+                            return Err(LexError::InvalidLambdaVariableChar(next.1, next.0 + 1));
                         }
                     }
                 }
                 if varname.is_empty() {
-                    return Err(LexError::EmptyLambdaVariable(idx));
+                    return Err(LexError::EmptyLambdaVariable(idx + 1));
                 }
                 tokens.push(Token::Lambda(varname));
             }
@@ -102,29 +106,23 @@ fn _tokenize(input: &str) -> Result<Vec<Token>> {
                 tokens.push(Token::Variable(varname));
             }
             c if c.is_whitespace() || c == '.' => (),
-            _ => return Err(LexError::InvalidCharacter(c, idx)),
+            _ => return Err(LexError::InvalidCharacter(c, idx + 1)),
         }
     }
     Ok(tokens)
 }
 
-pub(crate) fn tokenize(input: &str, idx: Option<usize>) -> Vec<Token> {
+pub(crate) fn tokenize(input: &str, idx: usize) -> Vec<Token> {
     let tokens = _tokenize(input);
     dbg!(&tokens);
     match tokens {
         // If error in a token, print error and exit
         Err(err_code) => {
-            match idx {
-                Some(idx) => eprintln!(
-                    "Invalid expression '{}' caught during tokenizing on line {}!",
-                    err_code,
-                    idx + 1
-                ),
-                None => eprintln!(
-                    "Invalid expression '{}' caught during tokenizing!",
-                    err_code
-                ),
-            }
+            eprintln!(
+                "Invalid expression [{}] caught during tokenizing on line {}!",
+                err_code,
+                idx + 1
+            );
             std::process::exit(1);
         }
         // Else: parse the tokens
@@ -132,6 +130,24 @@ pub(crate) fn tokenize(input: &str, idx: Option<usize>) -> Vec<Token> {
     }
 }
 
-pub(crate) fn bench_tokenize(input: &str) -> Result<Vec<Token>> {
-    _tokenize(input)
+pub(crate) fn bench_tokenize(input: &str) -> Vec<Token> {
+    _tokenize(input).unwrap()
+}
+
+pub(crate) fn manual_tokenize(input: &str) -> Option<Vec<Token>> {
+    let tokens = _tokenize(input);
+    dbg!(&tokens);
+    match tokens {
+        // If error in a token, print error and exit
+        Err(err_code) => {
+            eprintln!(
+                "Invalid expression [{}] caught during tokenizing!",
+                err_code
+            );
+            None
+        }
+
+        // Else: parse the tokens
+        Ok(tokens) => tokens.into(),
+    }
 }

@@ -4,60 +4,74 @@
 use crate::parser::bench_parse;
 use crate::tokenizer::bench_tokenize;
 
-pub fn bench(args: Vec<String>) {
-    let phrase = args.get(2).expect("No expression given!").clone();
+pub(super) fn bench(args: Vec<String>) {
+    let expression = args.get(2).expect("No expression given!").clone();
     let times = args
         .get(3)
         .expect("No iterations given!")
         .parse::<usize>()
         .unwrap();
 
-    // warmup
+    // <Test tokenize>
+    //
+    // <warmup>
     println!("Warming up...");
     for _ in 0..1000000 {
-        bench_tokenize(&phrase).unwrap();
+        bench_tokenize(&expression);
     }
     println!("Done warming up.");
-
+    // <test>
     let now1 = std::time::Instant::now();
     for _ in 0..times {
-        bench_tokenize(&phrase).unwrap();
+        bench_tokenize(&expression);
     }
     let elapsed1 = now1.elapsed();
+    // </Test tokenize>
 
-    let tokens = bench_tokenize(&phrase).unwrap();
+    let tokens = bench_tokenize(&expression);
 
-    // warmup
+    // <Test parse>
+    //
+    // <warmup>
     println!("Warming up...");
     for _ in 0..1000000 {
-        bench_parse(&tokens).unwrap();
+        bench_parse(&tokens);
     }
     println!("Done warming up.");
-
+    // <test>
     let now2 = std::time::Instant::now();
     for _ in 0..times {
-        bench_parse(&tokens).unwrap();
+        bench_parse(&tokens);
     }
     let elapsed2 = now2.elapsed();
+    // </Test parse>
 
-    // warmup
+    // <Test combined>
+    //
+    // <warmup>
     println!("Warming up...");
     for _ in 0..1000000 {
-        bench_tokenize(&phrase).unwrap();
-        bench_parse(&tokens).unwrap();
+        bench_tokenize(&expression);
+        bench_parse(&tokens);
     }
     println!("Done warming up.");
-
+    // <test>
     let now3 = std::time::Instant::now();
     for _ in 0..times {
-        bench_tokenize(&phrase).unwrap();
-        bench_parse(&tokens).unwrap();
+        bench_tokenize(&expression);
+        bench_parse(&tokens);
     }
     let elapsed3 = now3.elapsed();
-    println!("Tokenizing {} {} times took {:?}", phrase, times, elapsed1);
-    println!("Parsing {} {} times took {:?}", phrase, times, elapsed2);
+    // </Test combined>
+
+    // print results
+    println!(
+        "Tokenizing {} {} times took {:?}",
+        expression, times, elapsed1
+    );
+    println!("Parsing {} {} times took {:?}", expression, times, elapsed2);
     println!(
         "Tokenizing and parsing (combined) {} {} times took {:?}",
-        phrase, times, elapsed3
+        expression, times, elapsed3
     );
 }

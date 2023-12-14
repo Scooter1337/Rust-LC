@@ -20,9 +20,10 @@ use manual_mode::manual_mode;
 
 #[allow(dead_code, unused)]
 fn main() {
-    // if args provided, read from file
+    // if args provided
     let lines: Vec<String>;
     if std::env::args().len() > 1 {
+        // get args
         let args = std::env::args().collect::<Vec<String>>();
 
         match args[1].as_str() {
@@ -42,9 +43,8 @@ fn main() {
         if lines.is_empty() {
             panic!("Empty file!");
         }
-    }
-    // continuously read input from terminal
-    else {
+    } else {
+        // read input from terminal
         lines = read_lines_from_terminal();
     }
 
@@ -52,13 +52,13 @@ fn main() {
         .into_iter()
         .enumerate()
         .map(|(idx, line)| {
-            // tokenize each line
-            let tokens = tokenize(&line, Some(idx));
+            let tokens = tokenize(&line, idx);
             let expression = parse(&tokens, Some(idx));
+            // convert the expression to a string, making use of the Display trait
             let exprstring = expression.to_string();
 
             // reparse the expression
-            let tokens2 = tokenize(&exprstring, Some(idx));
+            let tokens2 = tokenize(&exprstring, idx);
             let expression2 = parse(&tokens2, Some(idx));
 
             // check if the expressions are equal
@@ -76,7 +76,7 @@ fn main() {
             }
         })
         .collect();
-    // Will have panicked if invalid expression
+    // We can only get here if we have 0 errors, so print the expressions
     for expr in expressions {
         println!("{}", expr);
     }

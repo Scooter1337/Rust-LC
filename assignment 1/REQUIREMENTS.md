@@ -49,7 +49,7 @@
 
 - Explain format in README ✅
 - program explanation in README ✅
-- positive and negative examples ✅/❌
+- positive and negative examples ✅/✅
 - may accept multiple expressions, one per line ✅
 - error message may be printed on error ✅
 - Program may support unicode ✅

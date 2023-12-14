@@ -4,7 +4,7 @@
 // Import handy dbg! macro (shadowing std::dbg! macro)
 use crate::dbg;
 
-use std::fmt::{Display, Error, Formatter};
+use std::fmt::{Display, Error, Formatter, Result};
 
 use crate::tokenizer::Token;
 
@@ -27,8 +27,8 @@ pub(super) enum ParseError {
     NoAbstractionBody,
 }
 
-impl std::fmt::Display for ParseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl Display for ParseError {
+    fn fmt(&self, f: &mut Formatter) -> Result {
         match self {
             ParseError::InvalidExpression => write!(f, "Invalid expression"),
             ParseError::EmptyExpression => write!(f, "Empty expression"),
@@ -110,7 +110,7 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
 }
 
 impl Display for Expression {
-    fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), Error> {
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> Result {
         match self {
             /*
             If Lambda -> print λ{name}.{expr}
@@ -205,6 +205,20 @@ pub(crate) fn parse(tokens: &[Token], idx: Option<usize>) -> Expression {
     }
 }
 
-pub(crate) fn bench_parse(tokens: &[Token]) -> ParseResult<Expression> {
-    _parse(tokens)
+pub(crate) fn bench_parse(tokens: &[Token]) -> Expression {
+    _parse(tokens).unwrap()
+}
+
+pub(crate) fn manual_parse(tokens: &[Token]) -> Option<Expression> {
+    let expression = _parse(tokens);
+    dbg!(&expression);
+    match expression {
+        // If error in expression, print error and exit
+        Err(err_code) => {
+            eprintln!("Invalid expression [{}] caught during parsing!", err_code);
+            None
+        }
+        // Else: reparse the expression (according to the assignment)
+        Ok(expression) => expression.into(),
+    }
 }
