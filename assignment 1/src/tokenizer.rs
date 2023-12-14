@@ -1,6 +1,3 @@
-// Import handy dbg! macro (shadowing std::dbg! macro)
-use crate::dbg;
-
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Token {
     /// an abstraction with a bound variable
@@ -15,20 +12,23 @@ pub(crate) enum Token {
 
 #[derive(Debug, PartialEq, Eq)]
 pub(super) enum LexError {
-    EmptyVariableName,
-    InvalidCharacter(char),
-    InvalidExpression,
-    InvalidVariableName,
+    EmptyVariableName(usize),
+    InvalidCharacter(char, usize),
+    InvalidExpression(usize),
+    InvalidVariableName(usize),
+    EmptyLambdaVariable(usize),
 }
 
 impl std::fmt::Display for LexError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        dbg!(self);
         match self {
-            LexError::EmptyVariableName => write!(f, "Empty variable name"),
-            LexError::InvalidVariableName => write!(f, "Invalid variable name"),
-            LexError::InvalidCharacter(c) => write!(f, "Invalid character: {}", c),
-            LexError::InvalidExpression => write!(f, "Invalid expression"),
+            LexError::EmptyVariableName(i) => write!(f, "Empty variable name at idx: {}", i),
+            LexError::EmptyLambdaVariable(i) => write!(f, "Empty lambda variable at idx: {}", i),
+            LexError::InvalidVariableName(i) => write!(f, "Invalid variable name at idx: {}", i),
+            LexError::InvalidCharacter(c, i) => {
+                write!(f, "Invalid character: '{}' at idx: {}", c, i)
+            }
+            LexError::InvalidExpression(i) => write!(f, "Invalid expression at idx: {}", i),
         }
     }
 }
@@ -46,17 +46,17 @@ impl Tokenizer {
 
     pub(super) fn tokenize(&self) -> Result<Vec<Token>> {
         let mut tokens = Vec::with_capacity(self.input.len());
-        let mut chars = self.input.chars().peekable();
+        let mut chars = self.input.chars().enumerate().peekable();
 
-        while let Some(c) = chars.next() {
+        while let Some((idx, c)) = chars.next() {
             match c {
                 '\\' | 'λ' => {
                     let mut varname = String::new();
-                    for c in chars.by_ref() {
+                    while let Some((idx, c)) = chars.peek() {
                         match c {
                             '.' | '(' => {
                                 if varname.is_empty() {
-                                    return Err(LexError::EmptyVariableName);
+                                    return Err(LexError::EmptyVariableName(*idx));
                                 }
                                 break;
                             }
@@ -66,30 +66,37 @@ impl Tokenizer {
                                     break;
                                 } else {
                                     // name is empty, we can skip
+                                    chars.next();
                                     continue;
                                 }
                             }
-                            c if c.is_alphabetic() => {
-                                varname.push(c);
+                            c if c.is_ascii_alphabetic() => {
+                                varname.push(chars.next().unwrap().1);
                             }
-                            c if c.is_numeric() => {
+                            c if c.is_alphanumeric() => {
                                 if varname.is_empty() {
-                                    return Err(LexError::InvalidVariableName);
+                                    return Err(LexError::InvalidVariableName(*idx));
                                 }
-                                varname.push(c);
+                                varname.push(chars.next().unwrap().1);
                             }
-                            _ => return Err(LexError::InvalidCharacter(c)),
+                            _ => {
+                                let next = chars.next().unwrap();
+                                return Err(LexError::InvalidCharacter(next.1, next.0));
+                            }
                         }
+                    }
+                    if varname.is_empty() {
+                        return Err(LexError::EmptyLambdaVariable(idx));
                     }
                     tokens.push(Token::Lambda(varname));
                 }
                 '(' => tokens.push(Token::LParen),
                 ')' => tokens.push(Token::RParen),
-                c if c.is_alphabetic() => {
+                c if c.is_ascii_alphabetic() => {
                     let mut varname = String::from(c);
-                    while let Some(&c) = chars.peek() {
+                    while let Some((_, c)) = chars.peek() {
                         if c.is_alphanumeric() {
-                            varname.push(chars.next().unwrap());
+                            varname.push(chars.next().unwrap().1);
                         } else {
                             break;
                         }
@@ -97,7 +104,7 @@ impl Tokenizer {
                     tokens.push(Token::Variable(varname));
                 }
                 c if c.is_whitespace() => (),
-                _ => return Err(LexError::InvalidCharacter(c)),
+                _ => return Err(LexError::InvalidCharacter(c, idx)),
             }
         }
         Ok(tokens)
