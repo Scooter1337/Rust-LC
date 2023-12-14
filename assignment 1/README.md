@@ -40,6 +40,7 @@
 3. Parse the tokens
    - If there is an error, print the error and continue
    - If there is no error, print `> expression`
+4. GOTO 1
 
 ## Benchmark Mode
 
