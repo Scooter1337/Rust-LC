@@ -16,13 +16,13 @@ S3704041
 - `make build` \
   (is equal to cargo build --release) \
   (the release flag is important for performance, but not for correctness, removing the flag unleashes some debug macros.)
-- Running the program is findable in the assignment folder.
+- Running the program is explained in the assignment folder README.
 
 ## Cleaning
 
 Just like most Makefiles implement, cargo has a clean command you might want to use: `cargo clean` \
 Target folders can get really large, my highest recorded size is 12GB.
-For simplicity, I added it to the Makefile, so you can use `make clean` too.
+For simplicity, I added it to the Makefiles, so you can use `make clean` too.
 
 ## Some more interesting tools I used
 
@@ -33,7 +33,7 @@ For simplicity, I added it to the Makefile, so you can use `make clean` too.
 
 ### Assignment 1
 
-> You can repeat these tests by running `make run -b 'a b c' 1`, `make run -b 'a b c' 1000`, etc.
+> You can repeat these tests by running `make run -b 'a b c' 1000`, `make run -b 'a b c' 1000000`, etc.
 
 
 <table class="tg">
