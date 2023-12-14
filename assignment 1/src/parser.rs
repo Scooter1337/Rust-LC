@@ -1,3 +1,6 @@
+// Import handy dbg! macro (shadowing std::dbg! macro)
+use crate::dbg;
+
 use std::fmt::{Display, Error, Formatter};
 
 use crate::tokenizer::Token;
@@ -16,6 +19,21 @@ pub(crate) enum Expression {
 pub(super) enum ParseError {
     EmptyExpression,
     InvalidExpression,
+    UnexpectedRParen,
+    UnclosedLParen,
+    NoAbstractionBody,
+}
+
+impl std::fmt::Display for ParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            ParseError::InvalidExpression => write!(f, "Invalid expression"),
+            ParseError::EmptyExpression => write!(f, "Empty expression"),
+            ParseError::UnexpectedRParen => write!(f, "Unexpected right parenthesis"),
+            ParseError::UnclosedLParen => write!(f, "Unclosed left parenthesis"),
+            ParseError::NoAbstractionBody => write!(f, "Missing abstraction body"),
+        }
+    }
 }
 
 pub(super) type ParseResult<T> = std::result::Result<T, ParseError>;
@@ -28,7 +46,7 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
         match &tokens[idx] {
             Token::Lambda(name) => {
                 if idx + 1 >= tokens.len() {
-                    return Err(ParseError::InvalidExpression);
+                    return Err(ParseError::NoAbstractionBody);
                 }
 
                 let body = _parse(&tokens[idx + 1..])?;
@@ -42,11 +60,13 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                 let mut paren_count = 1;
                 let mut end_idx = idx + 1;
                 while end_idx < tokens.len() {
+                    dbg!(&tokens[end_idx]);
                     match tokens[end_idx] {
                         Token::LParen => paren_count += 1,
                         Token::RParen => {
                             if paren_count == 1 {
                                 result.push(_parse(&tokens[idx + 1..end_idx])?);
+                                dbg!(&result.last());
                             }
                             paren_count -= 1
                         }
@@ -58,13 +78,12 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                     end_idx += 1;
                 }
                 if paren_count != 0 {
-                    return Err(ParseError::InvalidExpression);
+                    return Err(ParseError::UnclosedLParen);
                 }
-
-                idx = end_idx + 1;
+                idx = end_idx;
             }
             Token::RParen => {
-                return Err(ParseError::InvalidExpression);
+                return Err(ParseError::UnexpectedRParen);
             }
         }
         idx += 1;
