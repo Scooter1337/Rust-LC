@@ -35,24 +35,7 @@ For simplicity, I added it to the Makefile, so you can use `make clean` too.
 
 > You can repeat these tests by running `make run -b 'a b c' 1`, `make run -b 'a b c' 1000`, etc.
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
-.tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
-  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
-  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-7nal{background-color:black;border: none;color:#656565;text-align:left;vertical-align:top}
-.tg .tg-ly6r{border-color:#efefef;text-align:left;vertical-align:top; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black;}
-.tg .tg-0lax{text-align:left;vertical-align:top}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-.tg .tg-b4dk{background-color:black; border: none;;color:#656565;text-align:left;vertical-align:top; border-bottom: 1px solid black}
-.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
-.tg .abc {
-  border-bottom: 1px solid black;
-  border-right: 1px solid black;
-  border-left: 1px solid black;
-}
-</style>
+
 <table class="tg">
 <thead>
   <tr>
