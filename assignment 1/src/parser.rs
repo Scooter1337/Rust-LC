@@ -1,3 +1,6 @@
+// L.A. (Luca) Verheul - S3704041
+// Mon 11 Dec 2023
+
 // Import handy dbg! macro (shadowing std::dbg! macro)
 use crate::dbg;
 
@@ -96,6 +99,7 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
     if result.len() == 1 {
         Ok(result.pop().unwrap())
     } else {
+        // Reduce the result vector to a single expression
         match result.into_iter().reduce(|left_expr, right_expr| {
             Expression::Application(Box::new(left_expr), Box::new(right_expr))
         }) {
@@ -103,10 +107,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
             None => Err(ParseError::InvalidExpression),
         }
     }
-}
-
-pub(super) fn parse(tokens: &[Token]) -> ParseResult<Expression> {
-    Ok(_parse(tokens))?
 }
 
 impl Display for Expression {
@@ -164,4 +164,47 @@ impl Display for Expression {
             }
         }
     }
+}
+
+/// Parse the tokens into an expression
+/// If given tokens result in an invalid expression, prints an error and exits the program
+///
+/// # Arguments
+/// * `tokens` - The tokens to parse
+/// * `idx` - The index of the line the tokens are on (for error printing), optional
+///
+/// # Returns
+/// The parsed expression
+///
+/// # Error
+/// * `idx` given - "Invalid expression [{err_code}] caught during parsing on line {idx}!"
+/// * `idx` not given - "Invalid expression [{err_code}] caught during parsing!"
+pub(crate) fn parse(tokens: &[Token], idx: Option<usize>) -> Expression {
+    let expression = _parse(tokens);
+    dbg!(&expression);
+    match expression {
+        // If error in expression, print error and exit
+        Err(err_code) => {
+            match idx {
+                Some(idx) => {
+                    eprintln!(
+                        "Invalid expression [{}] caught during parsing on line {}!",
+                        err_code,
+                        idx + 1
+                    );
+                }
+                None => {
+                    eprintln!("Invalid expression [{}] caught during parsing!", err_code);
+                }
+            }
+
+            std::process::exit(1);
+        }
+        // Else: reparse the expression (according to the assignment)
+        Ok(expression) => expression,
+    }
+}
+
+pub(crate) fn bench_parse(tokens: &[Token]) -> ParseResult<Expression> {
+    _parse(tokens)
 }

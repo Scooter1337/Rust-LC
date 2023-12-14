@@ -1,5 +1,5 @@
 // L.A. (Luca) Verheul - S3704041
-// Wo 13 Dec 2023
+// Wed 13 Dec 2023
 
 /// A macro to print debug information only in debug mode.
 /// When running the program in release mode, the macro will be replaced with nothing.

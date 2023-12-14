@@ -1,24 +1,22 @@
 // L.A. (Luca) Verheul - S3704041
-// Wo 13 Dec 2023
+// Mon 11 Dec 2023
 
-#[allow(dead_code)]
 mod line_reader;
-use line_reader::*;
+use line_reader::{read_lines_from_file, read_lines_from_terminal};
 
-#[allow(dead_code)]
 mod tokenizer;
-use tokenizer::*;
+use tokenizer::tokenize;
 
-#[allow(dead_code)]
 mod parser;
-use parser::*;
+use parser::{parse, Expression};
 
-#[allow(dead_code)]
 mod utils;
 
-#[allow(dead_code)]
 mod bench;
-use bench::*;
+use bench::bench;
+
+mod manual_mode;
+use manual_mode::manual_mode;
 
 #[allow(dead_code, unused)]
 fn main() {
@@ -55,32 +53,25 @@ fn main() {
         .enumerate()
         .map(|(idx, line)| {
             // tokenize each line
-            let tokenizer = Tokenizer::new(line);
-            let tokens = tokenizer.tokenize();
-            dbg!(&tokens);
-            match tokens {
-                Err(err_code) => {
+            let tokens = tokenize(&line, Some(idx));
+            let expression = parse(&tokens, Some(idx));
+            let exprstring = expression.to_string();
+
+            // reparse the expression
+            let tokens2 = tokenize(&exprstring, Some(idx));
+            let expression2 = parse(&tokens2, Some(idx));
+
+            // check if the expressions are equal
+            match expression == expression2 {
+                true => expression2,
+                false => {
                     eprintln!(
-                        "Invalid expression '{}' caught during tokenizing on line {}!",
-                        err_code,
+                        "Invalid expression (on reparse) '{}' is not equal to '{}' on line {}!",
+                        expression2,
+                        expression,
                         idx + 1
                     );
                     std::process::exit(1);
-                }
-                Ok(tokens) => {
-                    let expression = parser::parse(&tokens);
-                    dbg!(&expression);
-                    match expression {
-                        Ok(expression) => expression,
-                        Err(err_code) => {
-                            eprintln!(
-                                "Invalid expression '{}' caught during parsing on line {}!",
-                                err_code,
-                                idx + 1
-                            );
-                            std::process::exit(1);
-                        }
-                    }
                 }
             }
         })
@@ -88,34 +79,5 @@ fn main() {
     // Will have panicked if invalid expression
     for expr in expressions {
         println!("{}", expr);
-    }
-}
-
-fn manual_mode() {
-    println!("Manual mode activated!");
-    println!("Enter an expression to parse it.");
-    loop {
-        print!("> ");
-        let input = read_line_from_terminal();
-        let tokenizer = Tokenizer::new(input);
-        let tokens = tokenizer.tokenize();
-        dbg!(&tokens);
-        match tokens {
-            Err(err_code) => {
-                eprintln!("Invalid expression '{}'!", err_code);
-                continue;
-            }
-            Ok(tokens) => {
-                let expression = parser::parse(&tokens);
-                dbg!(&expression);
-                match expression {
-                    Ok(expression) => println!("{}", expression),
-                    Err(err_code) => {
-                        eprintln!("Invalid expression '{}'!", err_code);
-                        continue;
-                    }
-                }
-            }
-        }
     }
 }

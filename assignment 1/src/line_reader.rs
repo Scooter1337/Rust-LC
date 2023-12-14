@@ -1,3 +1,6 @@
+// L.A. (Luca) Verheul - S3704041
+// Mon 11 Dec 2023
+
 // Import handy dbg! macro (shadowing std::dbg! macro)
 use crate::dbg;
 
