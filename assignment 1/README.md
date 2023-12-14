@@ -25,8 +25,8 @@
            - If there is an error, print the error and exit with code 1
            - If there is no error, continue
         4. Compare the outputs
-           - If the output is the same, continue to next line
            - If the output is not the same, print the error and exit with code 1
+           - If the output is the same, continue to next line
 4. Print the output and exit with code 0
 
 ## Manual Mode
