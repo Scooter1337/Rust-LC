@@ -1,8 +1,15 @@
 # Rust Lambda Calculus Assignment 1
 
+## Authors
+
 ### [L.A. (Luca) Verheul](mailto:s3704041@vuw.leidenuniv.nl)
 
 S3704041
+
+> OS: MacOS 14.2.1 \
+> Rust Compiler: 1.74.1 \
+
+Known defects: [None](REQUIREMENTS.md)
 
 # Format
 
