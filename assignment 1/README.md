@@ -6,8 +6,9 @@
 
 S3704041
 
-> OS: MacOS 14.2.1 \
-> Rust Compiler: 1.74.1 \
+> OS: **MacOS Sonoma 14.2.1**  \
+> Arch: **ARM64** \
+> Rust Compiler: **1.74.1** \
 
 Known defects: [None](REQUIREMENTS.md)
 
