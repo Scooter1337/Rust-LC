@@ -24,7 +24,17 @@ pub(super) fn read_lines_from_file(filename: &str) -> Vec<String> {
     };
 
     let reader = BufReader::new(file);
-    for line in reader.lines() {
+
+    const MAX_LINES: usize = 1;
+
+    for (i, line) in reader.lines().enumerate() {
+        if (i + 1) > MAX_LINES {
+            eprintln!(
+                "File too large, max lines (assignment spec!) is {}!",
+                MAX_LINES
+            );
+            std::process::exit(1);
+        }
         lines.push(line.expect("Could not read line"));
     }
 
