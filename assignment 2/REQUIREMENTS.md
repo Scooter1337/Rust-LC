@@ -36,12 +36,12 @@
 
 - Explanation of how the program works ❌
 - positive and negative examples ✅
-- Non printable ascii characters support ❌
+- Non printable ascii characters support ✅
 
 ### Reductions
 
 - Terminate after x steps (1000) if there are still reductions possible. ✅
-- Reduction strategy may be configured
+- Reduction strategy may be configured ❌
 - program may exit with status 2 when a limit on the number of steps has been reached ✅
 - program may print error message on error 1 or 2 ✅
 - may print understandable error messages ✅

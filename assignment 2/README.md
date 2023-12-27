@@ -4,9 +4,9 @@
 
 S3704041
 
-> OS: **MacOS Sonoma 14.2.1**  \
+> OS: **MacOS Sonoma 14.2.1** \
 > Arch: **ARM64** \
-> Rust Compiler: **1.74.1** 
+> Rust Compiler: **1.74.1**
 
 Known defects: [None](REQUIREMENTS.md)
 
@@ -23,45 +23,45 @@ Known defects: [None](REQUIREMENTS.md)
 1. Read from stdin until EOF
 2. Split the input into lines
 3. For each line:
-    1. Lex the line
-        - If there is an error, print the error and exit with code 1
-        - If there is no error, continue
-    2. Parse the tokens
-        - If there is an error, print the error and exit with code 1
-        - If there is no error, reparse (as according to the requirements)
-            1. Convert the expression to a string
-            2. lex the string
-                - If there is an error, print the error and exit with code 1
-                - If there is no error, continue
-            3. Parse the tokens
-                - If there is an error, print the error and exit with code 1
-                - If there is no error, continue
-            4. Compare the outputs
-                - If the output is not the same, print the error and exit with code 1
-                - If the output is the same, continue to next line
+   1. Lex the line
+      - If there is an error, print the error and exit with code 1
+      - If there is no error, continue
+   2. Parse the tokens
+      - If there is an error, print the error and exit with code 1
+      - If there is no error, reparse (as according to the requirements)
+        1. Convert the expression to a string
+        2. lex the string
+           - If there is an error, print the error and exit with code 1
+           - If there is no error, continue
+        3. Parse the tokens
+           - If there is an error, print the error and exit with code 1
+           - If there is no error, continue
+        4. Compare the outputs
+           - If the output is not the same, print the error and exit with code 1
+           - If the output is the same, continue to next line
 4. Print the output and exit with code 0
 
 ## Manual Mode
 
 1. Continuously read from stdin until newline
-    - If the input is `exit` or `quit`, exit with code 0
-    - If the input is not `exit` or `quit`, continue
+   - If the input is `exit` or `quit`, exit with code 0
+   - If the input is not `exit` or `quit`, continue
 2. Lex the input
-    - If there is an error, print the error and continue
-    - If there is no error, continue
+   - If there is an error, print the error and continue
+   - If there is no error, continue
 3. Parse the tokens
-    - If there is an error, print the error and continue
-    - If there is no error, print `> expression`
+   - If there is an error, print the error and continue
+   - If there is no error, print `> expression`
 4. GOTO 1
 
 ## Benchmark Mode
 
 1. Get phrase and N from arguments
 2. For each test
-    1. Warmup
-    2. Start timer
-    3. Run N iterations
-    4. Stop timer
+   1. Warmup
+   2. Start timer
+   3. Run N iterations
+   4. Stop timer
 3. Print times
 
 # Usage
@@ -96,8 +96,7 @@ All above commands can also be used with `cargo` instead of `make`:
 
 # Choices I made
 
-- Variable names can (by choice) only contain **alphanumeric** characters (in any language, unicode), it did not make sense to add support for other characters like emoji, etc.
-- Instead of using Rust's built-in 'Panic', I manually return an error message and exit the program with an exit code. This is to comply with the requirements of the assignment, as panic exits with 101, and not with the required 1.
+- Non-printable ASCII characters are supported, and are treated as whitespace.
 
 # For Rust Newbies
 
