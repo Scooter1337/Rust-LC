@@ -58,8 +58,8 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                 let mut varname = String::new();
                 while let Some((idx, c)) = chars.peek() {
                     match c {
-                        // a dot and a left parenthesis always signify the end of the variable name
-                        '.' | '(' => {
+                        // a dot, a lambda and a left parenthesis always signify the end of the variable name
+                        '.' | '(' | '\\' | 'λ' => {
                             if varname.is_empty() {
                                 return Err(LexError::EmptyVariableName(*idx + 1));
                             }
