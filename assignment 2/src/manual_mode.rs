@@ -4,7 +4,8 @@
 use std::io::{self, Write};
 
 use crate::{
-    line_reader::read_line_from_terminal, parser::manual_parse, tokenizer::manual_tokenize,
+    line_reader::read_line_from_terminal, parser::manual_parse, reducer::manual_reduce,
+    tokenizer::manual_tokenize,
 };
 
 pub(super) fn manual_mode() {
@@ -19,8 +20,12 @@ pub(super) fn manual_mode() {
             continue;
         }
         let expression = manual_parse(&tokens.unwrap());
+
         if let Some(expression) = expression {
-            println!("> {}", expression);
+            let expression = manual_reduce(expression);
+            if let Some(expression) = expression {
+                println!("> {}", expression);
+            }
         }
     }
 }
