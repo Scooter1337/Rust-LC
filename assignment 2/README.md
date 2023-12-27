@@ -8,7 +8,9 @@ S3704041
 > Arch: **ARM64** \
 > Rust Compiler: **1.74.1**
 
-Known defects: [None](REQUIREMENTS.md)
+Known defects: [See the full list here](REQUIREMENTS.md)
+
+- Reduction strategy is not configurable, as my implementation for it was hacky and it didn't make sense to keep it in. Disabling alpha conversion only resulted in duplicate variables, which is not what I wanted.
 
 # Format
 
@@ -16,7 +18,63 @@ Known defects: [None](REQUIREMENTS.md)
 - Application: `{term} {term}`, e.g. `a b`
 - Variable: `a`, `b`, `c`, etc. But also Unicode (only alphabetical (by choice), no emoji for example) characters, e.g. `a我`
 
+# Reduction Strategies
+
+The program supports the following reduction strategies:
+
+- Beta Reduction
+- Alpha Conversion
+
 # How the program works
+
+## Reducing
+
+### Reduce function
+
+1. Set step counter to 1, set varname counter to 1
+2. Reduce the AST
+   1. Add 1 to the step counter
+   2. Match expression
+      - If it is a lambda abstraction
+        1. Return self but **Reduce()** body
+      - If it is an application
+        1. **Reduce()** left expression
+        2. If resulting left expression is a lambda abstraction
+           - True: Return reduction of **beta()** **reduction()** of left expression with right expression
+           - False: **Reduce()** right expression, return application of left expression and right expression
+      - If it is a variable, return self
+
+### Beta Reduction function
+
+1. match abstraction given
+   - If it is a lambda abstraction
+     1. **Substitute()** all occurrences of the variable in the body with the expression given, and return this resulting expression
+   - If it is not a lambda abstraction, error
+
+### Substitute function
+
+1. match expression
+   - If variable
+     1. If variable is the same as the variable to substitute, return the expression to substitute
+     2. If variable is not the same as the variable to substitute, return the variable
+   - If application
+     1. **Substitute()** left expression
+     2. **Substitute()** right expression
+     3. Return application of left expression and right expression
+   - If lambda abstraction
+     - if variable is a free variable in the body
+       1. use **Alpha()** to create a new name and body for the abstraction
+       2. create new abstraction using alpha name and alpha **Substitute()** alpha body
+     - else return self with **Substitute()** body
+
+### Alpha Conversion function
+
+1. Create unique name using varname counter
+2. Substitute all occurrences of the variable in the body with the unique name
+
+### Free Variables function
+
+Simple function that recurses to find all free variables in an expression.
 
 ## Normal / Assignment Mode
 
@@ -39,6 +97,9 @@ Known defects: [None](REQUIREMENTS.md)
         4. Compare the outputs
            - If the output is not the same, print the error and exit with code 1
            - If the output is the same, continue to next line
+   3. Reduce the AST
+      - If there is an error, print the error and exit with code 1
+      - If there is no error, continue
 4. Print the output and exit with code 0
 
 ## Manual Mode
@@ -51,8 +112,11 @@ Known defects: [None](REQUIREMENTS.md)
    - If there is no error, continue
 3. Parse the tokens
    - If there is an error, print the error and continue
-   - If there is no error, print `> expression`
-4. GOTO 1
+   - If there is no error, continue
+4. Reduce the AST
+   - If there is an error, print the error and continue
+   - If there is no error, print '> expression' and continue
+5. GOTO 1
 
 ## Benchmark Mode
 

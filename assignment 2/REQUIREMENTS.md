@@ -12,7 +12,7 @@
 - README ✅
 - Compilable ✅
 - Work for files with ascii characters ✅
-- README must document what reduction strategies are implemented ❌
+- README must document what reduction strategies are implemented ✅
 - must exit with exit status 0 when an expression cannot be reduced any further by a beta-reduction ✅
 - must exit with 1 when there is a syntax error or cli error ✅
 - must be interruptable by the OS ✅
@@ -34,14 +34,14 @@
 
 ### General
 
-- Explanation of how the program works ❌
+- Explanation of how the program works ✅
 - positive and negative examples ✅
 - Non printable ascii characters support ✅
 
 ### Reductions
 
 - Terminate after x steps (1000) if there are still reductions possible. ✅
-- Reduction strategy may be configured ❌
+- Reduction strategy may be configured ❌ (WILL NOT IMPLEMENT)
 - program may exit with status 2 when a limit on the number of steps has been reached ✅
 - program may print error message on error 1 or 2 ✅
 - may print understandable error messages ✅
