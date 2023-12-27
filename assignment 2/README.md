@@ -1,11 +1,12 @@
-# Rust Lambda Calculus Assignment 1
+# Rust Lambda Calculus Assignment 2
 
 ### [L.A. (Luca) Verheul](mailto:s3704041@vuw.leidenuniv.nl)
 
 S3704041
 
-OS: MacOS 14.2.1 \
-Rust Compiler: 1.74.1
+> OS: **MacOS Sonoma 14.2.1**  \
+> Arch: **ARM64** \
+> Rust Compiler: **1.74.1** 
 
 Known defects: [None](REQUIREMENTS.md)
 

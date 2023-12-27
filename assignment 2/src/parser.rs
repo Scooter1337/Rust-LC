@@ -8,7 +8,7 @@ use crate::tokenizer::Token;
 use std::fmt::{Display, Formatter, Result};
 
 // Boxes are heap allocated, so we can use them to store the expression tree
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub(crate) enum Expression {
     /// <Expression> <Expression>
     Application(Box<Expression>, Box<Expression>),

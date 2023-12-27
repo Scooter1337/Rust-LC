@@ -59,7 +59,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                 while let Some((idx, c)) = chars.peek() {
                     match c {
                         // a dot and a left parenthesis always signify the end of the variable name
-                        '.' | '(' => {
+                        '.' | '(' | '\\' | 'λ' => {
                             if varname.is_empty() {
                                 return Err(LexError::EmptyVariableName(*idx + 1));
                             }
@@ -87,6 +87,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                             }
                             varname.push(chars.next().unwrap().1);
                         }
+
                         // All other characters are invalid
                         _ => {
                             let next = chars.next().unwrap();
@@ -138,7 +139,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
 ///
 /// # Error
 /// "Invalid expression [{err_code}] caught during tokenizing on line {idx}!"
-pub(crate) fn tokenize(input: &str, idx: usize) -> Vec<Token> {
+pub(super) fn tokenize(input: &str, idx: usize) -> Vec<Token> {
     let tokens = _tokenize(input);
     dbg!(&tokens);
     match tokens {

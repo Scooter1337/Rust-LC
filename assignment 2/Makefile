@@ -10,10 +10,10 @@ endif
 build:
 	cargo build --release
 run:
-	target/release/assignment1 $(RUN_ARGS)
+	target/release/assignment2 $(RUN_ARGS)
 run-manual:
-	target/release/assignment1 -m
+	target/release/assignment2 -m
 run-bench:
-	target/release/assignment1 -b "$(EXPR)" "$(N)"
+	target/release/assignment2 -b "$(EXPR)" "$(N)"
 clean:
 	cargo clean
