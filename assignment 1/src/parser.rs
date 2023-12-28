@@ -176,11 +176,11 @@ impl Display for Expression {
             Expression::Variable(name) => write!(fmt, "{name}"),
             /*
             If Application
-                If lexpr = abs -> "({left_expr})"
+                If lexpr = abs | app -> "({left_expr})"
                 Else -> "{left_expr}"
                 + " "
                 + If rexpr = app | abs -> "({right_expr})"
-                | Else -> "{right_expr}"
+                Else -> "{right_expr}"
              */
             Expression::Application(left_expr, right_expr) => {
                 // Left

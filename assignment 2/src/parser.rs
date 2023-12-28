@@ -53,9 +53,32 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                     return Err(ParseError::NoAbstractionBody);
                 }
                 // recursively parse the body of the abstraction
-                let body = _parse(&tokens[idx + 1..])?;
+                let mut end_idx = idx + 1;
+                let mut paren_count = 0;
+
+                while end_idx < tokens.len() {
+                    match tokens[end_idx] {
+                        Token::LParen => paren_count += 1,
+                        Token::RParen => {
+                            paren_count -= 1;
+                            if paren_count == 0 {
+                                break;
+                            }
+                        }
+                        Token::Variable(_) => {
+                            if paren_count == 0 {
+                                break;
+                            }
+                        }
+                        _ => {}
+                    }
+                    end_idx += 1;
+                }
+                dbg!(end_idx);
+                // recursively parse the body of the abstraction
+                let body = _parse(&tokens[idx + 1..=end_idx])?;
                 result.push(Expression::Abstraction(name.clone(), Box::new(body)));
-                idx = tokens.len();
+                idx = end_idx;
             }
             Token::Variable(ref variable) => {
                 result.push(Expression::Variable(variable.clone()));
@@ -135,7 +158,13 @@ impl Display for Expression {
 
             λx.a b
             */
-            Expression::Abstraction(name, expr) => write!(fmt, "λ{name}.{expr}"),
+            Expression::Abstraction(name, expr) => {
+                if let Expression::Application(_, _) = expr.as_ref() {
+                    write!(fmt, "λ{name}.({expr})")
+                } else {
+                    write!(fmt, "λ{name}.{expr}")
+                }
+            }
             /*
             If Variable -> print {name}
             Variable("a")
@@ -147,18 +176,18 @@ impl Display for Expression {
             Expression::Variable(name) => write!(fmt, "{name}"),
             /*
             If Application
-                If lexpr = abs -> "({left_expr})"
+                If lexpr = abs | app -> "({left_expr})"
                 Else -> "{left_expr}"
                 + " "
                 + If rexpr = app | abs -> "({right_expr})"
-                  Else -> "{right_expr}"
+                Else -> "{right_expr}"
              */
             Expression::Application(left_expr, right_expr) => {
                 // Left
-                if let Expression::Abstraction(_l, _r) = left_expr.as_ref() {
-                    write!(fmt, "({left_expr})")
-                } else {
+                if let Expression::Variable(_) = left_expr.as_ref() {
                     write!(fmt, "{left_expr}")
+                } else {
+                    write!(fmt, "({left_expr})")
                 }?;
                 // Separator
                 write!(fmt, " ")?;
