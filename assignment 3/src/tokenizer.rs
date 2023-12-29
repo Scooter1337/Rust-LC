@@ -13,8 +13,16 @@ pub(crate) enum Token {
     LParen,
     /// right parenthesis
     RParen,
-    /// a variable with an identifier
-    Variable(String),
+    /// a variable with an identifier, lowercase
+    LVariable(String),
+    /// a variable with an identifier, uppercase
+    UVariable(String),
+    /// Arrow
+    Arrow,
+    /// Hat
+    Hat,
+    /// Colon
+    Colon,
 }
 
 #[allow(unused)]
@@ -26,6 +34,7 @@ pub(super) enum LexError {
     InvalidVariableName(usize),
     InvalidLambdaVariableChar(char, usize),
     EmptyLambdaVariable(usize),
+    InvalidArrow(usize),
 }
 
 impl Display for LexError {
@@ -41,6 +50,7 @@ impl Display for LexError {
             LexError::InvalidLambdaVariableChar(c, i) => {
                 write!(f, "Invalid lambda body character: '{}' at pos: {}", c, i)
             }
+            LexError::InvalidArrow(i) => write!(f, "Invalid type arrow at pos: {}", i),
         }
     }
 }
@@ -59,7 +69,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                 while let Some((idx, c)) = chars.peek() {
                     match c {
                         // a dot, a lambda and a left parenthesis always signify the end of the variable name
-                        '.' | '(' | '\\' | 'λ' => {
+                        '.' | '(' | '\\' | 'λ' | '^' => {
                             if varname.is_empty() {
                                 return Err(LexError::EmptyVariableName(*idx + 1));
                             }
@@ -70,7 +80,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                             break;
                         }
                         // a space signifies the end of the variable name if it is not empty
-                        c if c.is_whitespace() || c.is_ascii_control() => {
+                        c if c.is_whitespace() => {
                             if !varname.is_empty() {
                                 // name is not empty, we can break
                                 break;
@@ -80,8 +90,8 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                                 continue;
                             }
                         }
-                        // The first character of the variable name must be alphabetic and ascii
-                        c if c.is_ascii_alphabetic() => {
+                        // The first character of the variable name must be alphabetic, ascii and lowercase
+                        c if c.is_ascii_lowercase() => {
                             varname.push(chars.next().unwrap().1);
                         }
                         // The following characters of the variable name must be alphanumeric, but can be unicode
@@ -106,9 +116,21 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
 
             '(' => tokens.push(Token::LParen),
             ')' => tokens.push(Token::RParen),
+            '^' => tokens.push(Token::Hat),
+            ':' => tokens.push(Token::Colon),
+            '-' => {
+                if let Some((_, '>')) = chars.peek() {
+                    chars.next();
+                    tokens.push(Token::Arrow);
+                } else {
+                    return Err(LexError::InvalidArrow(idx + 1));
+                }
+            }
 
             // a variable name must start with an alphabetic ascii character
             c if c.is_ascii_alphabetic() => {
+                let lowercase = c.is_ascii_lowercase();
+
                 let mut varname = String::from(c);
                 while let Some((_, c)) = chars.peek() {
                     if c.is_alphanumeric() {
@@ -117,11 +139,15 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                         break;
                     }
                 }
-                tokens.push(Token::Variable(varname));
+                if lowercase {
+                    tokens.push(Token::LVariable(varname));
+                } else {
+                    tokens.push(Token::UVariable(varname));
+                }
             }
 
             // ignore whitespace and dots
-            c if c.is_whitespace() => (),
+            c if c.is_whitespace() || c.is_ascii_control() => (),
 
             // all other characters are invalid
             _ => return Err(LexError::InvalidCharacter(c, idx + 1)),
