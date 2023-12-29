@@ -5,26 +5,36 @@
 S3704041
 
 ## Assignments
+
 ### Assignment 1
+
 #### Assignment Instructions
+
 - Lambda Calculus Parser
 - Precedence: lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
 - Grammar: ⟨expr⟩ ::= ⟨var⟩ | '(' ⟨expr⟩ ')' | '\' ⟨var⟩ ⟨expr⟩ | ⟨expr⟩ ⟨expr⟩
-- See 
+- See [REQUIREMENTS](<assignment 1/REQUIREMENTS.md>) for detailed requirements.
+
 ### Assignment 2
+
 #### Assignment Instructions
+
 - Lambda Calculus Interpreter (Parser + Reducer)
 - Precedence: Lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
 - Grammar: ⟨expr⟩ ::= ⟨var⟩ | '(' ⟨expr⟩ ')' | '\' ⟨var⟩ ⟨expr⟩ | ⟨expr⟩ ⟨expr⟩
+- See [REQUIREMENTS](<assignment 2/REQUIREMENTS.md>) for detailed requirements.
+
 ### Assignment 3
+
 - Lambda Calculus Type Checker (Parser + Type Checker)
 - Precedence: Lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
 - Grammar:
   - ⟨judgement⟩ ::= ⟨expr⟩ ':' ⟨type⟩
   - ⟨expr⟩ ::= ⟨lvar⟩ | '(' ⟨expr⟩ ')' | '\' ⟨lvar⟩ '^' ⟨type⟩ ⟨expr⟩ | ⟨expr⟩ ⟨expr⟩
   - ⟨type⟩ ::= ⟨uvar⟩ | '(' ⟨type⟩ ')' | ⟨type⟩ '->' ⟨type⟩ \
-lvar = variable beginning with lowercase latin letter \
-uvar = variable beginning with uppercase latin letter
+    lvar = variable beginning with lowercase latin letter \
+    uvar = variable beginning with uppercase latin letter
+- See [REQUIREMENTS](<assignment 3/REQUIREMENTS.md>) for detailed requirements.
 
 ## Setup
 
@@ -56,7 +66,6 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
 ### Assignment 1
 
 > You can repeat these tests by running `make run-bench EXPR="a b c" N=1000`, `make run-bench EXPR="a b c" N=1000000`, etc.
-
 
 <table class="tg">
 <thead>
