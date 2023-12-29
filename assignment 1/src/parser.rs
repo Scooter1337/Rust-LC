@@ -53,6 +53,8 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                     return Err(ParseError::NoAbstractionBody);
                 }
 
+                // 28 DEC edit: precedence rules are other way around. λx.a b = λx.(a) b and not λx.(a b)
+                // Therefore, we find the end of the abstraction body first, and then recursively parse the body
                 let mut end_idx = idx + 1;
                 let mut paren_count = 0;
 
