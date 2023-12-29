@@ -4,6 +4,28 @@
 
 S3704041
 
+## Assignments
+### Assignment 1
+#### Assignment Instructions
+- Lambda Calculus Parser
+- Precedence: lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
+- Grammar: ⟨expr⟩ ::= ⟨var⟩ | '(' ⟨expr⟩ ')' | '\' ⟨var⟩ ⟨expr⟩ | ⟨expr⟩ ⟨expr⟩
+- See 
+### Assignment 2
+#### Assignment Instructions
+- Lambda Calculus Interpreter (Parser + Reducer)
+- Precedence: Lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
+- Grammar: ⟨expr⟩ ::= ⟨var⟩ | '(' ⟨expr⟩ ')' | '\' ⟨var⟩ ⟨expr⟩ | ⟨expr⟩ ⟨expr⟩
+### Assignment 3
+- Lambda Calculus Type Checker (Parser + Type Checker)
+- Precedence: Lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
+- Grammar:
+  - ⟨judgement⟩ ::= ⟨expr⟩ ':' ⟨type⟩
+  - ⟨expr⟩ ::= ⟨lvar⟩ | '(' ⟨expr⟩ ')' | '\' ⟨lvar⟩ '^' ⟨type⟩ ⟨expr⟩ | ⟨expr⟩ ⟨expr⟩
+  - ⟨type⟩ ::= ⟨uvar⟩ | '(' ⟨type⟩ ')' | ⟨type⟩ '->' ⟨type⟩ \
+lvar = variable beginning with lowercase latin letter \
+uvar = variable beginning with uppercase latin letter
+
 ## Setup
 
 - Install Rust: https://www.rust-lang.org/tools/install
