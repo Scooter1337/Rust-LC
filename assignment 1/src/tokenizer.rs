@@ -70,7 +70,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                             break;
                         }
                         // a space signifies the end of the variable name if it is not empty
-                        c if c.is_whitespace() || c.is_ascii_control() => {
+                        c if c.is_whitespace() => {
                             if !varname.is_empty() {
                                 // name is not empty, we can break
                                 break;
@@ -121,7 +121,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
             }
 
             // ignore whitespace and dots
-            c if c.is_whitespace() => (),
+            c if c.is_whitespace() || c.is_ascii_control() => (),
 
             // all other characters are invalid
             _ => return Err(LexError::InvalidCharacter(c, idx + 1)),
