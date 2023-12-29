@@ -19,8 +19,25 @@ pub(super) fn manual_mode() {
             continue;
         }
         let expression = manual_parse(&tokens.unwrap());
-        if let Some(expression) = expression {
-            println!("> {}", expression);
+        if expression.is_none() {
+            continue;
+        }
+        let exprstring = expression.unwrap().to_string();
+        let tokens2 = manual_tokenize(&exprstring);
+        if tokens2.is_none() {
+            continue;
+        }
+        let expression2 = manual_parse(&tokens2.unwrap());
+        if expression2.is_none() {
+            continue;
+        }
+        let exprstring2 = expression2.unwrap().to_string();
+        if exprstring == exprstring2 {
+            println!("> {exprstring}");
+        } else {
+            println!("> {exprstring} != {exprstring2}");
+            println!("First Parse: {}", exprstring);
+            println!("Reparse: {}", exprstring2);
         }
     }
 }

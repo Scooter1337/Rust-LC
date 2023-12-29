@@ -15,6 +15,8 @@ pub(crate) enum Token {
     RParen,
     /// a variable with an identifier
     Variable(String),
+    /// Dot
+    Dot,
 }
 
 #[allow(unused)]
@@ -63,10 +65,6 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                             if varname.is_empty() {
                                 return Err(LexError::EmptyVariableName(*idx + 1));
                             }
-                            // skip the dot
-                            if c == &'.' {
-                                chars.next();
-                            }
                             break;
                         }
                         // a space signifies the end of the variable name if it is not empty
@@ -107,6 +105,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
 
             '(' => tokens.push(Token::LParen),
             ')' => tokens.push(Token::RParen),
+            '.' => tokens.push(Token::Dot),
 
             // a variable name must start with an alphabetic ascii character
             c if c.is_ascii_alphabetic() => {

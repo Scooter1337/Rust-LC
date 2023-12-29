@@ -53,13 +53,17 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                     return Err(ParseError::NoAbstractionBody);
                 }
 
-                // 28 DEC edit: precedence rules are other way around. λx.a b = λx.(a) b and not λx.(a b)
+                // 28 DEC edit: precedence rules are other way around. \x a b = (λx.a) b and not λx.a b
                 // Therefore, we find the end of the abstraction body first, and then recursively parse the body
                 let mut end_idx = idx + 1;
                 let mut paren_count = 0;
 
                 while end_idx < tokens.len() {
                     match tokens[end_idx] {
+                        Token::Dot => {
+                            end_idx = tokens.len() - 1;
+                            break;
+                        }
                         Token::LParen => paren_count += 1,
                         Token::RParen => {
                             paren_count -= 1;
@@ -91,7 +95,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
 
                 // find next parentheses
                 while end_idx < tokens.len() {
-                    dbg!(&tokens[end_idx]);
                     match tokens[end_idx] {
                         Token::LParen => paren_count += 1,
                         Token::RParen => {
@@ -117,6 +120,10 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
             // we handle all rparens in the lparen while loop, so if we encounter an rparen here, it is unexpected
             Token::RParen => {
                 return Err(ParseError::UnexpectedRParen);
+            }
+            Token::Dot => {
+                result.push(_parse(&tokens[idx + 1..])?);
+                idx = tokens.len();
             }
         }
         idx += 1;
@@ -160,11 +167,7 @@ impl Display for Expression {
             λx.a b
             */
             Expression::Abstraction(name, expr) => {
-                if let Expression::Application(_, _) = expr.as_ref() {
-                    write!(fmt, "λ{name}.({expr})")
-                } else {
-                    write!(fmt, "λ{name}.{expr}")
-                }
+                write!(fmt, "λ{name}.{expr}")
             }
             /*
             If Variable -> print {name}
