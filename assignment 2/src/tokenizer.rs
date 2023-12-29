@@ -28,6 +28,7 @@ pub(super) enum LexError {
     InvalidVariableName(usize),
     InvalidLambdaVariableChar(char, usize),
     EmptyLambdaVariable(usize),
+    TrailingDot(usize),
 }
 
 impl Display for LexError {
@@ -43,6 +44,7 @@ impl Display for LexError {
             LexError::InvalidLambdaVariableChar(c, i) => {
                 write!(f, "Invalid lambda body character: '{}' at pos: {}", c, i)
             }
+            LexError::TrailingDot(i) => write!(f, "Trailing dot at pos: {}", i),
         }
     }
 }
@@ -105,7 +107,26 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
 
             '(' => tokens.push(Token::LParen),
             ')' => tokens.push(Token::RParen),
-            '.' => tokens.push(Token::Dot),
+            '.' => {
+                // check if there is something after the dot
+                let mut found = false;
+                while let Some((_, c)) = chars.peek() {
+                    match c {
+                        c if c.is_whitespace() => {
+                            // if there is a space, skip it
+                            chars.next();
+                        }
+                        _ => {
+                            tokens.push(Token::Dot);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if !found {
+                    return Err(LexError::TrailingDot(idx + 1));
+                }
+            }
 
             // a variable name must start with an alphabetic ascii character
             c if c.is_ascii_alphabetic() => {
