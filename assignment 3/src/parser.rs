@@ -214,6 +214,9 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                         end_idx += 1;
                     }
                 }
+                if end_idx >= tokens.len() {
+                    return Err(ParseError::NoAbstractionBody);
+                }
 
                 // recursively parse the body of the abstraction
                 let body = _parse(&tokens[idx + 1..=end_idx])?;

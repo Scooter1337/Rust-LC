@@ -50,38 +50,38 @@ fn main() {
         lines = read_lines_from_terminal();
     }
 
-    let expressions: Vec<Judgement> = lines
+    let judgements: Vec<Judgement> = lines
         .into_iter()
         .enumerate()
         .map(|(idx, line)| {
             let tokens = tokenize(&line, idx);
-            let expression = parse(&tokens, idx);
-            // convert the expression to a string, making use of the Display trait
-            let exprstring = expression.to_string();
-            dbg!(&exprstring);
+            let judgement = parse(&tokens, idx);
+            // convert the judgement to a string, making use of the Display trait
+            let judgement_string = judgement.to_string();
+            dbg!(&judgement_string);
 
-            // reparse the expression
-            let tokens2 = tokenize(&exprstring, idx);
-            let expression2 = parse(&tokens2, idx);
+            // reparse the judgement
+            let tokens2 = tokenize(&judgement_string, idx);
+            let judgement2 = parse(&tokens2, idx);
 
-            // check if the expressions are equal
-            if exprstring != expression2.to_string() {
+            // check if the judgements are equal
+            if judgement_string != judgement2.to_string() {
                 eprintln!(
-                    "Invalid expression (on second parse) '{}' is not equal to '{}' on line {}!",
-                    expression2,
-                    expression,
+                    "Invalid judgement (on second parse) '{}' is not equal to '{}' on line {}!",
+                    judgement2,
+                    judgement,
                     idx + 1
                 );
                 std::process::exit(1);
             }
 
-            // type check the expression
-            type_check(&expression, idx);
-            expression
+            // type check the judgement
+            type_check(&judgement, idx);
+            judgement
         })
         .collect();
-    // We can only get here if we have 0 errors, so print the expressions
-    for expr in expressions {
-        println!("{}", expr);
+    // We can only get here if we have 0 errors, so print the judgements
+    for judgement in judgements {
+        println!("{}", judgement);
     }
 }

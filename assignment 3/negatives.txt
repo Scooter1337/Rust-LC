@@ -4,3 +4,5 @@
 (x y):A
 (\x^A y):(A->B)
 (\x^A x):(B -> B)
+(\x^a A) : A
+(\x^A A) : A
