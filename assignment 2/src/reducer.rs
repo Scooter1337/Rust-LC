@@ -191,9 +191,9 @@ pub(crate) fn bench_reduce(expr: Expression) -> Expression {
 pub(crate) fn manual_reduce(expr: Expression) -> Option<Expression> {
     CUSTOM_VARNAME_COUNTER.store(1, std::sync::atomic::Ordering::SeqCst);
     REDUCE_COUNTER.store(1, std::sync::atomic::Ordering::SeqCst);
-    let expr = _reduce(expr);
-    dbg!(&expr);
-    match expr {
+    let reduction = _reduce(expr);
+    dbg!(&reduction);
+    match reduction {
         Ok(expr) => expr.into(),
         Err(err) => {
             eprintln!("Error [{}] caught during reducing.", err);

@@ -80,7 +80,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                     }
                 }
 
-                dbg!(end_idx);
                 // recursively parse the body of the abstraction
                 let body = _parse(&tokens[idx + 1..=end_idx])?;
                 result.push(Expression::Abstraction(name.clone(), Box::new(body)));
@@ -102,7 +101,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                             if paren_count == 1 {
                                 // recursively parse the expression inside the parentheses
                                 result.push(_parse(&tokens[idx + 1..end_idx])?);
-                                dbg!(&result.last());
                             }
                             paren_count -= 1
                         }

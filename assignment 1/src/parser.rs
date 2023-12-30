@@ -102,7 +102,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                             if paren_count == 1 {
                                 // recursively parse the expression inside the parentheses
                                 result.push(_parse(&tokens[idx + 1..end_idx])?);
-                                dbg!(&result.last());
                             }
                             paren_count -= 1
                         }

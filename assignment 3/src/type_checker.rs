@@ -61,7 +61,6 @@ fn free_vars(
     abstr_vars: &mut HashSet<String>,
     typeset: &mut HashSet<String>,
 ) {
-    dbg!(&expression, &abstr_vars, &free);
     match expression {
         Expression::Application(lexpr, rexpr) => {
             free_vars(lexpr, free, abstr_vars, typeset);

@@ -124,7 +124,6 @@ fn _parse_type(tokens: &[Token]) -> ParseResult<Type> {
         idx += 1;
     }
     if result.is_empty() {
-        dbg!(&tokens, "notype");
         return Err(ParseError::NoType);
     }
     if result.len() == 1 {
@@ -140,7 +139,6 @@ fn _parse_type(tokens: &[Token]) -> ParseResult<Type> {
 }
 
 fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
-    dbg!(&tokens);
     let mut idx = 0;
     let mut result = Vec::new();
 
@@ -177,7 +175,6 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                     end_idx += 1;
                 }
 
-                dbg!(idx + 2, end_idx + 1);
                 let abstype = _parse_type(&tokens[idx + 2..end_idx + 1])?;
                 idx = end_idx;
 
@@ -197,9 +194,7 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                             Token::LParen => paren_count += 1,
                             Token::RParen => {
                                 paren_count -= 1;
-                                dbg!(paren_count);
                                 if paren_count == 0 && body {
-                                    dbg!(end_idx);
                                     break;
                                 }
                             }
@@ -390,9 +385,7 @@ fn judgement(tokens: &[Token]) -> ParseResult<Judgement> {
         }
         2 => {
             let expr = _parse(split[0])?;
-            dbg!(&expr, &split[1]);
             let typ = _parse_type(split[1])?;
-            dbg!(&expr, &typ);
             Ok(Judgement::Judgement(Box::new(expr), Box::new(typ)))
         }
         _ => Err(ParseError::TooManyColons),
