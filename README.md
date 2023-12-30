@@ -63,91 +63,235 @@ For simplicity, I added it to the Makefiles, so you can use `make clean` too.
 
 ## Benchmarking
 
-### Assignment 1
+Benched on a 3.5 GHz 12-Core Intel Xeon E5-2690V3 (24 Threads) with 64GB of DDR4-2133MT RAM. (So definitely room for single-threaded improvement.)
 
 > You can repeat these tests by running `make run-bench EXPR="a b c" N=1000`, `make run-bench EXPR="a b c" N=1000000`, etc.
 
-<table class="tg">
+### Assignment 1
+
+<table>
 <thead>
   <tr>
-    <th class="tg-7nal"></th>
-    <th class="tg-0lax abc" colspan="3">1 iteration (avg 1000 iter)</th>
-    <th class="tg-0lax abc" colspan="3">1,000 iterations<br> </th>
-    <th class="tg-0pky abc" colspan="3">1,000,000 iterations</th>
+    <th></th>
+    <th colspan="3">1 iteration</th>
+    <th colspan="3">1,000 iterations<br> </th>
+    <th colspan="3">1,000,000 iterations</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td class="tg-b4dk"></td>
-    <td class="tg-ly6r">Token.</td>
-    <td class="tg-ly6r">Parsing</td>
-    <td class="tg-ly6r">Comb.</td>
-    <td class="tg-ly6r">Token.</td>
-    <td class="tg-ly6r">Parsing</td>
-    <td class="tg-ly6r">Comb.</td>
-    <td class="tg-ly6r">Token.</td>
-    <td class="tg-ly6r">Parsing</td>
-    <td class="tg-ly6r">Comb.</td>
+    <td></td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Combined</td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Combined</td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Combined</td>
   </tr>
   <tr>
-    <td class="tg-fymr">a</td>
-    <td class="tg-0lax">63ns</td>
-    <td class="tg-0lax">70ns</td>
-    <td class="tg-0lax">154ns</td>
-    <td class="tg-0lax">63µs</td>
-    <td class="tg-0pky">70µs</td>
-    <td class="tg-0pky">154µs</td>
-    <td class="tg-0pky">59ms</td>
-    <td class="tg-0lax">73ms</td>
-    <td class="tg-0pky">148ms</td>
+    <td><code>a</code></td>
+    <td>48ns</td>
+    <td>49ns</td>
+    <td>84ns</td>
+    <td>39µs</td>
+    <td>46µs</td>
+    <td>83µs</td>
+    <td>36ms</td>
+    <td>46ms</td>
+    <td>83ms</td>
   </tr>
   <tr>
-    <td class="tg-fymr">a b c</td>
-    <td class="tg-0lax">170ns</td>
-    <td class="tg-0lax">410ns</td>
-    <td class="tg-0lax">586ns</td>
-    <td class="tg-0lax">170µs</td>
-    <td class="tg-0pky">410µs</td>
-    <td class="tg-0pky">586µs</td>
-    <td class="tg-0pky">159ms</td>
-    <td class="tg-0lax">385ms</td>
-    <td class="tg-0pky">574ms</td>
+    <td><code>a b c</code></td>
+    <td>95ns</td>
+    <td>160ns</td>
+    <td>242ns</td>
+    <td>80µs</td>
+    <td>155µs</td>
+    <td>240µs</td>
+    <td>80ms</td>
+    <td>159ms</td>
+    <td>251ms</td>
   </tr>
   <tr>
-    <td class="tg-fymr">(λx((a) (b)))</td>
-    <td class="tg-0lax">184ns</td>
-    <td class="tg-0lax">545ns</td>
-    <td class="tg-0lax">755ns</td>
-    <td class="tg-0lax">184µs</td>
-    <td class="tg-0pky">545µs</td>
-    <td class="tg-0pky">755µs</td>
-    <td class="tg-0pky">180ms</td>
-    <td class="tg-0lax">529ms</td>
-    <td class="tg-0pky">731ms</td>
+    <td><code>(λx((a) (b)))</code></td>
+    <td>152ns</td>
+    <td>381ns</td>
+    <td>532ns</td>
+    <td>135µs</td>
+    <td>305µs</td>
+    <td>441µs</td>
+    <td>136ms</td>
+    <td>307ms</td>
+    <td>445ms</td>
   </tr>
   <tr>
-    <td class="tg-fymr">(λ x a b)</td>
-    <td class="tg-0lax">171ns</td>
-    <td class="tg-0lax">387ns</td>
-    <td class="tg-0lax">598ns</td>
-    <td class="tg-0lax">171µs</td>
-    <td class="tg-0pky">387µs</td>
-    <td class="tg-0pky">598µs</td>
-    <td class="tg-0pky">168ms</td>
-    <td class="tg-0lax">397ms</td>
-    <td class="tg-0pky">606ms</td>
+    <td><code>(λ x a b)</code></td>
+    <td>150ns</td>
+    <td>236ns</td>
+    <td>362ns</td>
+    <td>108µs</td>
+    <td>193µs</td>
+    <td>302µs</td>
+    <td>102ms</td>
+    <td>196ms</td>
+    <td>304ms</td>
   </tr>
   <tr>
-    <td class="tg-fymr">λx.λy.λz.a (λw.b)</td>
-    <td class="tg-0lax">363ns</td>
-    <td class="tg-0lax">846ns</td>
-    <td class="tg-0lax">1.26µs</td>
-    <td class="tg-0lax">363µs</td>
-    <td class="tg-0pky">846µs</td>
-    <td class="tg-0pky">1.26ms</td>
-    <td class="tg-0pky">349ms</td>
-    <td class="tg-0lax">896ms</td>
-    <td class="tg-0pky">1.20s</td>
+    <td><code>λx.λy.λz.a (λw.b)</code></td>
+    <td>248ns</td>
+    <td>569ns</td>
+    <td>763ns</td>
+    <td>215µs</td>
+    <td>480µs</td>
+    <td>704µs</td>
+    <td>214ms</td>
+    <td>488ms</td>
+    <td>702ms</td>
+  </tr>
+</tbody>
+</table>
+
+### Assignment 2
+
+<table>
+<thead>
+  <tr>
+    <th></th>
+    <th colspan="4">1,000 iterations<br> </th>
+    <th colspan="4">1,000,000 iterations</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td></td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Reducing</td>
+    <td>Combined</td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Reducing</td>
+    <td>Combined</td>
+  </tr>
+  <tr>
+    <td><code>(\x y)((\x (x x))(\x (x x)))</code></td>
+    <td>338µs</td>
+    <td>766µs</td>
+    <td>121µs</td>
+    <td>1.19ms</td>
+    <td>287ms</td>
+    <td>700ms</td>
+    <td>113ms</td>
+    <td>1.12s</td>
+  </tr>
+  <tr>
+    <td><code>(\x x x)(\x x x)</code></td>
+    <td>203µs</td>
+    <td>499µs</td>
+    <td>235µs</td>
+    <td>926µs</td>
+    <td>181ms</td>
+    <td>444ms</td>
+    <td>221ms</td>
+    <td>870ms</td>
+  </tr>
+  <tr>
+    <td><code>\t (\x y) t</code></td>
+    <td>146µs</td>
+    <td>308µs</td>
+    <td>257µs</td>
+    <td>691µs</td>
+    <td>130ms</td>
+    <td>257ms</td>
+    <td>260ms</td>
+    <td>660ms</td>
+  </tr>
+  <tr>
+    <td><code>λx.λy.λz.a (λw.b)</code></td>
+    <td>241µs</td>
+    <td>515µs</td>
+    <td>207µs</td>
+    <td>951µs</td>
+    <td>213ms</td>
+    <td>474ms</td>
+    <td>214ms</td>
+    <td>918ms</td>
+  </tr>
+</tbody>
+</table>
+
+### Assignment 3
+
+<table>
+<thead>
+  <tr>
+    <th></th>
+    <th colspan="4">1,000 iterations<br> </th>
+    <th colspan="4">1,000,000 iterations</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td></td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Type Checking</td>
+    <td>Combined</td>
+    <td>Tokenizing</td>
+    <td>Parsing</td>
+    <td>Type Checking</td>
+    <td>Combined</td>
+  </tr>
+  <tr>
+    <td><code>(\x^A (\y^(A->B) (y ((\x^A x) x)))):</code> 
+        <br> 
+        <code>(A -> ((A -> B) -> B))</code></td>
+    <td>716µs</td>
+    <td>1.47ms</td>
+    <td>662µs</td>
+    <td>3.5ms</td>
+    <td>617ms</td>
+    <td>1.40s</td>
+    <td>604ms</td>
+    <td>3.40s</td>
+  </tr>
+  <tr>
+    <td><code>(\y^A (\x^(A -> (C -> A)) (x y))):</code>
+    <br>
+    <code>(A -> (A -> C -> A) -> C -> A)</code></td>
+    <td>669µs</td>
+    <td>1.33ms</td>
+    <td>630µs</td>
+    <td>3.51ms</td>
+    <td>633ms</td>
+    <td>1.31s</td>
+    <td>603ms</td>
+    <td>3.45s</td>
+  </tr>
+  <tr>
+    <td><code>(\x^A x):(A -> A)</code></td>
+    <td>170µs</td>
+    <td>453µs</td>
+    <td>280µs</td>
+    <td>926µs</td>
+    <td>151ms</td>
+    <td>418ms</td>
+    <td>258ms</td>
+    <td>866ms</td>
+  </tr>
+  <tr>
+    <td><code>(\x^B (\x^A x)):(B -> (A -> A))</code></td>
+    <td>286µs</td>
+    <td>741µs</td>
+    <td>400µs</td>
+    <td>1.47ms</td>
+    <td>261ms</td>
+    <td>723ms</td>
+    <td>362ms</td>
+    <td>1.46s</td>
   </tr>
 </tbody>
 </table>
