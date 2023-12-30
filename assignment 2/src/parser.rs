@@ -57,28 +57,29 @@ fn _parse(tokens: &[Token]) -> ParseResult<Expression> {
                 let mut end_idx = idx + 1;
                 let mut paren_count = 0;
 
-                while end_idx < tokens.len() {
-                    match tokens[end_idx] {
-                        Token::Dot => {
-                            end_idx = tokens.len() - 1;
-                            break;
-                        }
-                        Token::LParen => paren_count += 1,
-                        Token::RParen => {
-                            paren_count -= 1;
-                            if paren_count == 0 {
-                                break;
+                if tokens[end_idx] == Token::Dot {
+                    end_idx = tokens.len() - 1;
+                } else {
+                    while end_idx < tokens.len() {
+                        match tokens[end_idx] {
+                            Token::LParen => paren_count += 1,
+                            Token::RParen => {
+                                paren_count -= 1;
+                                if paren_count == 0 {
+                                    break;
+                                }
                             }
-                        }
-                        Token::Variable(_) => {
-                            if paren_count == 0 {
-                                break;
+                            Token::Variable(_) => {
+                                if paren_count == 0 {
+                                    break;
+                                }
                             }
+                            _ => {}
                         }
-                        _ => {}
+                        end_idx += 1;
                     }
-                    end_idx += 1;
                 }
+
                 dbg!(end_idx);
                 // recursively parse the body of the abstraction
                 let body = _parse(&tokens[idx + 1..=end_idx])?;
