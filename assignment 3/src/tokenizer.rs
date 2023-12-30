@@ -23,6 +23,8 @@ pub(crate) enum Token {
     Hat,
     /// Colon
     Colon,
+    /// Dot
+    Dot,
 }
 
 #[allow(unused)]
@@ -35,6 +37,7 @@ pub(super) enum LexError {
     InvalidLambdaVariableChar(char, usize),
     EmptyLambdaVariable(usize),
     InvalidArrow(usize),
+    TrailingDot(usize),
 }
 
 impl Display for LexError {
@@ -51,6 +54,7 @@ impl Display for LexError {
                 write!(f, "Invalid lambda body character: '{}' at pos: {}", c, i)
             }
             LexError::InvalidArrow(i) => write!(f, "Invalid type arrow at pos: {}", i),
+            LexError::TrailingDot(i) => write!(f, "Trailing dot at pos: {}", i),
         }
     }
 }
@@ -72,10 +76,6 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                         '.' | '(' | '\\' | 'λ' | '^' => {
                             if varname.is_empty() {
                                 return Err(LexError::EmptyVariableName(*idx + 1));
-                            }
-                            // skip the dot
-                            if c == &'.' {
-                                chars.next();
                             }
                             break;
                         }
@@ -126,11 +126,27 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                     return Err(LexError::InvalidArrow(idx + 1));
                 }
             }
+            '.' => {
+                // check if there is something after the dot
+                while let Some((_, c)) = chars.peek() {
+                    match c {
+                        c if c.is_whitespace() => {
+                            // if there is a space, skip it
+                            chars.next();
+                        }
+                        // Colons end the expression in this assignment, therefore we can use that as a limit
+                        // if there is a colon, skip it and return the dot
+                        ':' => return Err(LexError::TrailingDot(idx + 1)),
+                        _ => {
+                            tokens.push(Token::Dot);
+                            break;
+                        }
+                    }
+                }
+            }
 
             // a variable name must start with an alphabetic ascii character
             c if c.is_ascii_alphabetic() => {
-                let lowercase = c.is_ascii_lowercase();
-
                 let mut varname = String::from(c);
                 while let Some((_, c)) = chars.peek() {
                     if c.is_alphanumeric() {
@@ -139,7 +155,7 @@ fn _tokenize(input: &str) -> LexResult<Vec<Token>> {
                         break;
                     }
                 }
-                if lowercase {
+                if c.is_ascii_lowercase() {
                     tokens.push(Token::LVariable(varname));
                 } else {
                     tokens.push(Token::UVariable(varname));
