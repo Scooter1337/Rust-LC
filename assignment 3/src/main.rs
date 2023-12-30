@@ -11,6 +11,7 @@ mod parser;
 use parser::{parse, Judgement};
 
 mod type_checker;
+use type_checker::type_check;
 
 mod utils;
 
@@ -19,8 +20,6 @@ use bench::bench;
 
 mod manual_mode;
 use manual_mode::manual_mode;
-
-use crate::type_checker::type_check;
 
 fn main() {
     // if args provided
@@ -66,7 +65,7 @@ fn main() {
             let expression2 = parse(&tokens2, idx);
 
             // check if the expressions are equal
-            if expression != expression2 {
+            if exprstring != expression2.to_string() {
                 eprintln!(
                     "Invalid expression (on second parse) '{}' is not equal to '{}' on line {}!",
                     expression2,

@@ -8,18 +8,17 @@ use crate::tokenizer::Token;
 use std::fmt::{Display, Formatter, Result};
 
 // Boxes are heap allocated, so we can use them to store the expression tree
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub(crate) enum Expression {
     /// <Expression> <Expression>
     Application(Box<Expression>, Box<Expression>),
     /// <Variable>
     Variable(String),
     /// \ <Variable>^<Type> . <Expression>
-    // Abstraction(String, Box<Expression>),
     Abstraction(String, Box<Type>, Box<Expression>),
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub(crate) enum Type {
     /// <Type> -> <Type>
     Function(Box<Type>, Box<Type>),
@@ -27,13 +26,13 @@ pub(crate) enum Type {
     Variable(String),
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub(crate) enum Judgement {
     /// <Expression> : <Type>
     Judgement(Box<Expression>, Box<Type>),
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 enum ParseError {
     EmptyExpression,
     InvalidExpression,

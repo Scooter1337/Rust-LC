@@ -5,22 +5,25 @@
 
 use crate::{
     dbg,
-    parser::{Expression, Judgement},
+    parser::{Expression, Judgement, Type},
 };
 
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter, Result};
 
+#[derive(Debug)]
 enum TypeCheckError {
     UnknownType(String),
-    MismatchedTypes,
+    MismatchedTypes(String),
 }
 
 impl Display for TypeCheckError {
     fn fmt(&self, f: &mut Formatter) -> Result {
         match self {
             TypeCheckError::UnknownType(t) => write!(f, "Unknown type: {}", t),
-            TypeCheckError::MismatchedTypes => write!(f, "Mismatched types"),
+            TypeCheckError::MismatchedTypes(t) => {
+                write!(f, "Mismatched types, unknown type: {}", t)
+            }
         }
     }
 }
@@ -32,40 +35,50 @@ fn _type_check(judgement: &Judgement) -> TypeCheckResult {
     // Extract expression and type
     let Judgement::Judgement(expr, typ) = judgement;
 
-    // Check if free variables (unknown types) are present
+    // Check if free variables (unknown types) are present, and count types
     let mut free = HashSet::new();
-    free_vars(expr, &mut free, &mut HashSet::new());
-    dbg!(&free);
+    let mut typeset: HashSet<String> = HashSet::new();
+    free_vars(expr, &mut free, &mut HashSet::new(), &mut typeset);
+    dbg!(&free, &typeset);
 
     if !free.is_empty() {
         return Err(TypeCheckError::UnknownType(
             free.into_iter().collect::<Vec<String>>().join(", "),
         ));
     }
-    Ok(())
+
+    // Check if all types are known
+    match check_judgement_type(typ, &typeset) {
+        Ok(_) => Ok(()),
+        Err(err_code) => Err(err_code),
+    }
 }
 
-// borrowed from ass2
+// borrowed from ass2, modified to also keep track of types
 fn free_vars(
     expression: &Expression,
     free: &mut HashSet<String>,
     abstr_vars: &mut HashSet<String>,
+    typeset: &mut HashSet<String>,
 ) {
     dbg!(&expression, &abstr_vars, &free);
     match expression {
         Expression::Application(lexpr, rexpr) => {
-            free_vars(lexpr, free, abstr_vars);
-            free_vars(rexpr, free, abstr_vars);
+            free_vars(lexpr, free, abstr_vars, typeset);
+            free_vars(rexpr, free, abstr_vars, typeset);
         }
-        Expression::Abstraction(var, _type, body) => {
+        Expression::Abstraction(var, typ, body) => {
             // If this abstraction adds the variable, also remove it.
             if abstr_vars.insert(var.clone()) {
-                free_vars(body, free, abstr_vars);
+                free_vars(body, free, abstr_vars, typeset);
                 abstr_vars.remove(var);
             } else {
                 // the variable is already in the set, so should not be removed
-                free_vars(body, free, abstr_vars);
+                free_vars(body, free, abstr_vars, typeset);
             }
+
+            // add the type to the set of types
+            collect_types(typ, typeset);
         }
         Expression::Variable(varname) => {
             if !abstr_vars.contains(varname) {
@@ -73,6 +86,35 @@ fn free_vars(
             }
         }
     }
+}
+
+/// Collects all types in a type, and adds them to the typeset.
+fn collect_types(typ: &Type, typeset: &mut HashSet<String>) {
+    match typ {
+        Type::Function(t1, t2) => {
+            collect_types(t1, typeset);
+            collect_types(t2, typeset);
+        }
+        Type::Variable(t) => {
+            typeset.insert(t.clone());
+        }
+    }
+}
+
+fn check_judgement_type(typ: &Type, typeset: &HashSet<String>) -> TypeCheckResult {
+    match typ {
+        Type::Function(t1, t2) => {
+            check_judgement_type(t1, typeset)?;
+            check_judgement_type(t2, typeset)?;
+        }
+        Type::Variable(t) => {
+            if !typeset.contains(t) {
+                return Err(TypeCheckError::MismatchedTypes(t.clone()));
+            }
+        }
+    }
+
+    Ok(())
 }
 
 pub(super) fn type_check(judgement: &Judgement, idx: usize) {
@@ -86,6 +128,23 @@ pub(super) fn type_check(judgement: &Judgement, idx: usize) {
             );
 
             std::process::exit(1);
+        }
+    }
+}
+
+pub(crate) fn bench_type_check(judgement: &Judgement) {
+    _type_check(judgement).unwrap();
+}
+
+pub(crate) fn manual_type_check(judgement: &Judgement) -> bool {
+    match _type_check(judgement) {
+        Ok(_) => true,
+        Err(err_code) => {
+            println!(
+                "Invalid judgement [{}] caught during typechecking!",
+                err_code
+            );
+            false
         }
     }
 }

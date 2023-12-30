@@ -5,6 +5,7 @@ use std::io::{self, Write};
 
 use crate::{
     line_reader::read_line_from_terminal, parser::manual_parse, tokenizer::manual_tokenize,
+    type_checker::manual_type_check,
 };
 
 pub(super) fn manual_mode() {
@@ -31,9 +32,11 @@ pub(super) fn manual_mode() {
         if judgement2.is_none() {
             continue;
         }
-        let jdgmtstring2 = judgement2.unwrap().to_string();
+        let jdgmtstring2 = judgement2.clone().unwrap().to_string();
         if jdgmtstring == jdgmtstring2 {
-            println!("> {jdgmtstring}");
+            if manual_type_check(&judgement2.unwrap()) {
+                println!("> {jdgmtstring}");
+            }
         } else {
             println!("> {jdgmtstring} != {jdgmtstring2}");
             println!("First Parse: {}", jdgmtstring);
