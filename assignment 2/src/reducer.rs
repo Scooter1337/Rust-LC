@@ -103,9 +103,14 @@ fn _free_vars(
             _free_vars(rexpr, free, abstr_vars);
         }
         Expression::Abstraction(var, body) => {
-            abstr_vars.insert(var.clone());
-            _free_vars(body, free, abstr_vars);
-            abstr_vars.remove(var);
+            // If this abstraction adds the variable, also remove it.
+            if abstr_vars.insert(var.clone()) {
+                _free_vars(body, free, abstr_vars);
+                abstr_vars.remove(var);
+            } else {
+                // the variable is already in the set, so should not be removed
+                _free_vars(body, free, abstr_vars);
+            }
         }
         Expression::Variable(varname) => {
             if !abstr_vars.contains(varname) {
