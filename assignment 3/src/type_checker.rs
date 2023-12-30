@@ -101,6 +101,7 @@ fn collect_types(typ: &Type, typeset: &mut HashSet<String>) {
     }
 }
 
+/// Check all types in a judgement's type, and return an error if any of them are unknown.
 fn check_judgement_type(typ: &Type, typeset: &HashSet<String>) -> TypeCheckResult {
     match typ {
         Type::Function(t1, t2) => {
