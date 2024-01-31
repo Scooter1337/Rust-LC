@@ -1,6 +1,6 @@
 # Rust Lambda Calculus
 
-S3704041
+Lambda Calculus Assignment for Leiden University. Free choice of Programming Language.
 
 ## Assignments
 
