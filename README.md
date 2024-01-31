@@ -1,12 +1,12 @@
 # Rust Lambda Calculus
 
-### [L.A. (Luca) Verheul](mailto:s3704041@vuw.leidenuniv.nl)
-
 S3704041
 
 ## Assignments
 
 ### Assignment 1
+#### Grade
+9.6/10
 
 #### Assignment Instructions
 
@@ -16,6 +16,8 @@ S3704041
 - See [REQUIREMENTS](<assignment 1/REQUIREMENTS.md>) for detailed requirements.
 
 ### Assignment 2
+#### Grade
+10/10
 
 #### Assignment Instructions
 
@@ -25,6 +27,8 @@ S3704041
 - See [REQUIREMENTS](<assignment 2/REQUIREMENTS.md>) for detailed requirements.
 
 ### Assignment 3
+#### Grade
+8/10 (Messed up the type checking. Didn't watch the lectures prior to doing Assignment 3, rest is perfect)
 
 - Lambda Calculus Type Checker (Parser + Type Checker)
 - Precedence: Lambda abstraction groups more strongly than application (i.e. abstraction precedes application), and application associates to the left.
