@@ -1,0 +1,12 @@
+a12 b c我
+a (b c)
+abc
+\ x a b
+(\a我 ab)
+a \x b
+(a b)
+a b c
+(\ x a b)
+(\x((a) (b)))
+λx.(a b)
+λx.λy.λz.(a λw.b)
